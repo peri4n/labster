@@ -29,4 +29,3 @@ EXPOSE 3010
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
-

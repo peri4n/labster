@@ -1,34 +1,70 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import Card from '@mui/material/Card'
+import { Box, Button, CardActions, CardContent, CardHeader, TextField, Typography } from '@mui/material'
+import { useState } from 'react'
+
+type Sequence = {
+  id: number;
+  identifier: string;
+  sequence: string;
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  let [sequences, setSequences] = useState<Sequence[]>([]);
+  let [sequence, setSequence] = useState('');
+  let [identifier, setIdentifier] = useState('');
+
+  const columns: GridColDef[] = [
+    { field: 'id', headerName: 'ID', width: 70 },
+    { field: 'identifier', headerName: 'Identifier', width: 130 },
+    { field: 'sequence', headerName: 'Sequence', flex: 1 },
+  ];
+
+  function addSequence(e: React.MouseEvent<HTMLButtonElement>): void {
+    e.preventDefault();
+    setSequences([...sequences, { id: (sequences.length + 1), identifier, sequence }]);
+    setSequence('');
+    setIdentifier('');
+  }
+
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Card variant="outlined">
+        <>
+          <CardContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <TextField
+                required
+                id="outlined-required"
+                label="Identifier"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+              />
+              <TextField fullWidth label="Sequence" id="fullWidth"
+                value={sequence}
+                onChange={(e) => setSequence(e.target.value)}
+              />
+            </Box>
+          </CardContent>
+          <CardActions sx={{ justifyContent: 'flex-end' }}>
+            <Button size="small" variant="outlined" onClick={addSequence}>Add Sequence</Button>
+          </CardActions>
+        </>
+      </Card>
+      <Card variant="outlined" sx={{ height: 400 }}>
+        <DataGrid
+          rows={sequences}
+          columns={columns}
+          initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
+          pageSizeOptions={[5, 10]}
+          checkboxSelection
+          sx={{ border: 0 }}
+        />
+      </Card>
+    </Box>
   )
 }
 
