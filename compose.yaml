@@ -7,6 +7,12 @@ services:
       - POSTGRES_DB=labster
     networks:
       - labster
+  frontend:
+    build: frontend
+    ports:
+      - 3010:3010
+    networks:
+      - labster
   db:
     image: postgres
     restart: always

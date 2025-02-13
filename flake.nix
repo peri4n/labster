@@ -45,8 +45,15 @@
           cargo-edit
           bacon
           rust-analyzer
+
+          # Database
           sqlx-cli
+
+          # Building
           just
+
+          # Frontend
+          nodejs
         ];
 
         shellHook = ''
