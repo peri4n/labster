@@ -4,12 +4,12 @@ This crate implements the application's web interface. It contains controllers a
 
 ## Application state
 
-The code for defining the application state and creating a fresh state when the application boots, is located in `state.rs`.
+The code for defining the application state and creating a fresh state when the application boots, is located in `state.rs`.By default, the state contains a pool of database connection:
 
 ```rs
 #[derive(Clone)]
 pub struct AppState {
-    
+    pub db_pool: DbPool,
 }
 ```
 
@@ -33,14 +33,30 @@ Controllers and middlewares are kept in the respectively named directories. Cont
 
 ## Tests
 
-Gerust follows a full stack testing approach. The application's endpoint including database access are tested via tests in the `web` crate. Using Gerust's test macros, tests receive a fully configured and booted up instance of the application that requests can be made against:.
+Gerust follows a full stack testing approach. The application's endpoint including database access are tested via tests in the `web` crate. Using Gerust's test macros, tests receive a fully configured and booted up instance of the application that requests can be made against.In order to allow requests to access the database without the risk of different tests interfering with each other, each test uses its own dedicated database. A pool of connections is passed to the test via the test context and the application instance is preconfigured to use the same database:
 
-#[test]
-async fn test_hello(context: &TestContext) {
-    let response = context.app.request("/greet").send().await;
+#[db_test]
+async fn test_read_all(context: &DbTestContext) {
+    let task_changeset: TaskChangeset = Faker.fake();
+    create_task(task_changeset.clone(), &context.db_pool)
+        .await
+        .unwrap();
 
-    let greeting: Greeting = response.into_body().into_json().await;
-    assert_that!(greeting.hello, eq(String::from("world")));
+    let response = context
+        .app
+        .request("/tasks")
+        .method(Method::GET)
+        .send()
+        .await;
+
+    assert_that!(response.status(), eq(StatusCode::OK));
+
+    let tasks: TasksList = response.into_body().into_json::<TasksList>().await;
+    assert_that!(tasks, len(eq(1)));
+    assert_that!(
+        tasks.first().unwrap().description,
+        eq(task_changeset.description)
+    );
 }
 ### Test helpers
 

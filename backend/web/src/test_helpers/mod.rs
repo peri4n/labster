@@ -8,12 +8,16 @@ use axum::{
 };
 use hyper::header::{HeaderMap, HeaderName};
 use labster_config::{load_config, Config, Environment};
+use labster_db::{
+    test_helpers::{setup_db, teardown_db},
+    DbPool,
+};
 use std::cell::OnceCell;
 use tower::ServiceExt;
 
 /// A request that a test sends to the application.
 ///
-/// TestRequests are constructed via the test context (see[`TestContext`]).
+/// TestRequests are constructed via the test context (see[`DbTestContext`]).
 ///
 /// Example:
 /// ```
@@ -161,36 +165,73 @@ impl BodyExt for Body {
         serde_json::from_slice::<T>(&body).expect("Failed to deserialize JSON body")
     }
 }
-#[allow(clippy::test_attr_in_doctest)]
 /// Provides context information for application tests.
 ///
-/// A `TestContext` is passed as an argument to tests marked with the [`labster_macros::test`] attribute macro. It is used to access the application under test.
+/// A `DbTestContext` is passed as an argument to tests marked with the [`labster_macros::db_test`] attribute macro. It is used to access the application under test as well as the database (which is the same database the application under test uses).
 ///
 /// Example:
 /// ```
-/// #[test]
-/// async fn test_hello(context: &TestContext) {
-///     let response = context.app.request("/greet").send().await;
+/// #[db_test]
+/// async fn test_read_all(context: &DbTestContext) {
+///     let task_changeset: TaskChangeset = Faker.fake();
+///     create_task(task_changeset.clone(), &context.db_pool)
+///         .await
+///         .unwrap();
 ///
-///     let greeting: Greeting = response.into_body().into_json().await;
-///     assert_that!(greeting.hello, eq(String::from("world")));
+///     let response = context
+///         .app
+///         .request("/tasks")
+///         .method(Method::GET)
+///         .send()
+///         .await;
+///
+///     assert_that!(response.status(), eq(StatusCode::OK));
+///
+///     let tasks: TasksList = response.into_body().into_json::<TasksList>().await;
+///     assert_that!(tasks, len(eq(1)));
+///     assert_that!(
+///         tasks.first().unwrap().description,
+///         eq(task_changeset.description)
+///     );
 /// }
 /// ```
-pub struct TestContext {
+pub struct DbTestContext {
     /// The application that is being tested.
     pub app: Router,
+    /// A connection pool connected to the same database that the application that is being tested uses as well.
+    pub db_pool: DbPool,
 }
 
-/// Sets up a test and returns a [`TestContext`].
+/// Sets up a test and returns a [`DbTestContext`] configured for the particular test case.
 ///
-/// This function initializes a new instance of the application under test using the configuration for [`labster_config::Environment::Test`].
+/// This function initializes a new instance of the application under test using the configuration for [`labster_config::Environment::Test`]. The application is configured to use the same database that is also made available to the test itself via the test context. That database is a clone of the main test database that is only used by the particular test case to ensure isolation between test cases. It is automatically torn down after the test case completes (see [`teardown`]).
 ///
-/// This function is not invoked directly but used inside of the [`labster_macros::test`] attribute macro. The test context is automatically passed to test cases marked with that macro as an argument.
-pub async fn setup() -> TestContext {
+/// This function is not invoked directly but used inside of the [`labster_macros::db_test`] attribute macro. The test context is automatically passed to test cases marked with that macro as an argument.
+#[allow(unused)]
+pub async fn setup() -> DbTestContext {
     let init_config: OnceCell<Config> = OnceCell::new();
-    let _config = init_config.get_or_init(|| load_config(&Environment::Test).unwrap());
+    let config = init_config.get_or_init(|| load_config(&Environment::Test).unwrap());
 
-    let app = init_routes(AppState {});
+    let test_db_pool = setup_db(&config.database).await;
 
-    TestContext { app }
+    let app = init_routes(AppState {
+        db_pool: test_db_pool.clone(),
+    });
+
+    DbTestContext {
+        app,
+        db_pool: test_db_pool,
+    }
+}
+
+/// Tears down a [`DbTestContext`].
+///
+/// This function drops the test-case specific database set up by [`setup`].
+///
+/// This function is not invoked directly but used inside of the [`labster_macros::db_test`] attribute macro. The test context is automatically passed to test cases marked with that macro as an argument.
+#[allow(unused)]
+pub async fn teardown(context: DbTestContext) {
+    drop(context.app);
+
+    teardown_db(context.db_pool);
 }

@@ -1,9 +1,12 @@
 use labster_config::Config;
-
+use labster_db::{connect_pool, DbPool};
 use std::sync::Arc;
 
 /// The application's state that is available in [`crate::controllers`] and [`crate::middlewares`].
-pub struct AppState {}
+pub struct AppState {
+    /// The database pool that's used to get a connection to the application's database (see [`labster_db::DbPool`]).
+    pub db_pool: DbPool,
+}
 
 /// The application's state as it is shared across the application, e.g. in controllers and middlewares.
 ///
@@ -13,6 +16,10 @@ pub type SharedAppState = Arc<AppState>;
 /// Initializes the application state.
 ///
 /// This function creates an [`AppState`] based on the current [`labster_config::Config`].
-pub async fn init_app_state(_config: Config) -> AppState {
-    AppState {}
+pub async fn init_app_state(config: Config) -> AppState {
+    let db_pool = connect_pool(config.database)
+        .await
+        .expect("Could not connect to database!");
+
+    AppState { db_pool }
 }
