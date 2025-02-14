@@ -1,7 +1,7 @@
 import './App.css'
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Card from '@mui/material/Card'
-import { Box, Button, CardActions, CardContent, CardHeader, TextField, Typography } from '@mui/material'
+import { Box, Button, CardActions, CardContent, TextField } from '@mui/material'
 import { useState } from 'react'
 
 type Sequence = {

@@ -1,0 +1,3 @@
+[alias]
+db = ["run", "--package", "labster-cli", "--bin", "db", "--"]
+generate = ["run", "--package", "labster-cli", "--bin", "generate", "--"]

@@ -1,12 +1,15 @@
-use crate::state::AppState;
-use axum::Router;
+use crate::{controllers, state::AppState};
+use axum::{routing::{get, post}, Router};
 
 use std::sync::Arc;
 
 /// Initializes the application's routes.
 ///
-/// This function maps paths (e.g. "/greet") and HTTP methods (e.g. "GET") to functions in [`crate::controllers`] as well as includes middlewares defined in [`crate::middlewares`] into the routing layer (see [`axum::Router`]).
+/// This function maps paths (e.g. "/sequences") and HTTP methods (e.g. "GET") to functions in [`crate::controllers`] as well as includes middlewares defined in [`crate::middlewares`] into the routing layer (see [`axum::Router`]).
 pub fn init_routes(app_state: AppState) -> Router {
     let shared_app_state = Arc::new(app_state);
-    Router::new().with_state(shared_app_state)
+    Router::new()
+        .route("/sequences", get(controllers::sequences::read_all))
+        .route("/sequences", post(controllers::sequences::create))
+        .with_state(shared_app_state)
 }

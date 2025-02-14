@@ -47,6 +47,7 @@
           rust-analyzer
 
           # Database
+          postgresql
           sqlx-cli
 
           # Building
@@ -57,7 +58,7 @@
         ];
 
         shellHook = ''
-          ${pkgs.rustToolchain}/bin/cargo --version
+          export DATABASE_URL="postgres://test:test@localhost/labster"
         '';
       };
     });
