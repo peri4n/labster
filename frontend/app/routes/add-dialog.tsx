@@ -1,30 +1,50 @@
-import './App.css'
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import Card from '@mui/material/Card'
 import { Box, Button, CardActions, CardContent, TextField } from '@mui/material'
 import { useState } from 'react'
 
+import type { Route } from "./+types/add-dialog";
+
+export function meta({ }: Route.MetaArgs) {
+  return [
+    { title: "Labster" },
+    { name: "description", content: "Welcome to Labster!" },
+  ];
+}
+
+export async function clientLoader() {
+  const response = await fetch('http://localhost:3000/sequences')
+  const result: Promise<Sequence[]> = response.json();
+  return result;
+}
+
 type Sequence = {
-  id: number;
   identifier: string;
+  description: string;
   sequence: string;
 }
 
-function App() {
-
-  let [sequences, setSequences] = useState<Sequence[]>([]);
+export function AddDialog({ loaderData }: Route.ComponentProps) {
+  let [sequences, setSequences] = useState<Sequence[]>(loaderData);
   let [sequence, setSequence] = useState('');
   let [identifier, setIdentifier] = useState('');
 
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', width: 70 },
     { field: 'identifier', headerName: 'Identifier', width: 130 },
+    { field: 'description', headerName: 'Description', width: 200 },
     { field: 'sequence', headerName: 'Sequence', flex: 1 },
   ];
 
-  function addSequence(e: React.MouseEvent<HTMLButtonElement>): void {
+  async function addSequence(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
-    setSequences([...sequences, { id: (sequences.length + 1), identifier, sequence }]);
+    await fetch('http://localhost:3000/sequences', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ identifier, description: '', sequence })
+    });
+    setSequences([...sequences, { identifier, description: '', sequence }]);
     setSequence('');
     setIdentifier('');
   }
@@ -61,6 +81,7 @@ function App() {
           initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
           pageSizeOptions={[5, 10]}
           checkboxSelection
+          getRowId={(row) => row.identifier}
           sx={{ border: 0 }}
         />
       </Card>
@@ -68,4 +89,4 @@ function App() {
   )
 }
 
-export default App
+export default AddDialog
