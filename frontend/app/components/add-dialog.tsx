@@ -16,17 +16,17 @@ function AddDialog({ open, handleClose, addSequence }: AddDialogProps) {
 
   async function handleAdd(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
-    await fetch('http://localhost:3000/sequences', {
+    const result = await fetch('http://localhost:3000/sequences', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ identifier, description: '', sequence })
-    });
+    }).then(res => res.json());
     setSequence('');
     setIdentifier('');
     setDescription('');
-    addSequence({ identifier, description, sequence });
+    addSequence(result);
     handleClose();
   }
 

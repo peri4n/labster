@@ -1,5 +1,8 @@
 use crate::{controllers, state::AppState};
-use axum::{routing::{get, post}, Router};
+use axum::{
+    routing::{delete, get, post},
+    Router,
+};
 use tower_http::cors::CorsLayer;
 
 use std::sync::Arc;
@@ -12,6 +15,7 @@ pub fn init_routes(app_state: AppState) -> Router {
     Router::new()
         .route("/sequences", get(controllers::sequences::read_all))
         .route("/sequences", post(controllers::sequences::create))
+        .route("/sequences/:id", delete(controllers::sequences::delete))
         .layer(CorsLayer::permissive())
         .with_state(shared_app_state)
 }

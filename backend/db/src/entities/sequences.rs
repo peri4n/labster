@@ -5,6 +5,7 @@ use validator::Validate;
 
 #[derive(Serialize, Debug, Deserialize)]
 pub struct Sequence {
+    id: i32,
     identifier: String,
     description: String,
     sequence: String,
@@ -24,7 +25,7 @@ pub struct SequenceChangeset {
 pub async fn load_all(
     executor: impl sqlx::Executor<'_, Database = Postgres>,
 ) -> Result<Vec<Sequence>, crate::Error> {
-    let sequences = sqlx::query_as!(Sequence, "SELECT identifier, description, sequence FROM sequences")
+    let sequences = sqlx::query_as!(Sequence, "SELECT id, identifier, description, sequence FROM sequences")
         .fetch_all(executor)
         .await?;
     Ok(sequences)
@@ -36,7 +37,7 @@ pub async fn load(
 ) -> Result<Sequence, crate::Error> {
     match sqlx::query_as!(
         Sequence,
-        "SELECT identifier, description, sequence FROM sequences WHERE id = $1",
+        "SELECT id, identifier, description, sequence FROM sequences WHERE id = $1",
         id
     )
     .fetch_optional(executor)
@@ -54,7 +55,7 @@ pub async fn create(
 ) -> Result<Sequence, crate::Error> {
     sequence.validate()?;
 
-    sqlx::query!(
+    let record = sqlx::query!(
         "INSERT INTO sequences (identifier, description, sequence) VALUES ($1, $2, $3) RETURNING id",
         sequence.identifier,
         sequence.description,
@@ -65,6 +66,7 @@ pub async fn create(
     .map_err(crate::Error::DbError)?;
 
     Ok(Sequence {
+        id: record.id,
         identifier: sequence.identifier,
         description: sequence.description,
         sequence: sequence.sequence
@@ -90,6 +92,7 @@ pub async fn update(
     .map_err(crate::Error::DbError)?
     {
         Some(record) => Ok(Sequence {
+            id: record.id,
             identifier: record.identifier,
             description: record.description,
             sequence: record.sequence,

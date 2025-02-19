@@ -1,5 +1,5 @@
-import { DataGrid, type GridColDef } from '@mui/x-data-grid';
-import { Box, Button, Card, CardActions, CardContent } from '@mui/material'
+import { DataGrid, GridActionsCellItem, type GridColDef, type GridRowId } from '@mui/x-data-grid';
+import { Box, Button, Card, CardActions, CardContent, Typography } from '@mui/material'
 import { useState } from 'react'
 
 import type { Route } from "./+types/add-dialog";
@@ -19,6 +19,7 @@ export async function clientLoader() {
 }
 
 export type Sequence = {
+  id: number;
   identifier: string;
   description: string;
   sequence: string;
@@ -26,22 +27,52 @@ export type Sequence = {
 
 export function Main({ loaderData }: Route.ComponentProps) {
   let [sequences, setSequences] = useState<Sequence[]>(loaderData);
-  let [sequence, setSequence] = useState('');
-  let [identifier, setIdentifier] = useState('');
   let [addDialogVisible, setAddDialogVisible] = useState(false);
 
   function showAddDialog() {
-    setAddDialogVisible(true);
+    setAddDialogVisible(true)
   }
 
-  function addSequence(newSequence: Sequence) {
-    setSequences([...sequences, newSequence]);
+  function addSequence(sequence: Sequence) {
+    setSequences([...sequences, sequence])
+  }
+
+  function removeSequenceWithId(id: GridRowId) {
+    setSequences(sequences.filter(s => s.id != id))
+  }
+
+  async function handleDeleteClick(id: GridRowId) {
+    const response = await fetch(`http://localhost:3000/sequences/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+    removeSequenceWithId(id)
   }
 
   const columns: GridColDef[] = [
     { field: 'identifier', headerName: 'Identifier', width: 130 },
     { field: 'description', headerName: 'Description', width: 200 },
     { field: 'sequence', headerName: 'Sequence', flex: 1 },
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      cellClassName: 'actions',
+      getActions: ({ row }) => {
+
+        return [
+          <GridActionsCellItem
+            icon={<Typography>Delete</Typography>}
+            label="Delete"
+            onClick={() => handleDeleteClick(row.id)}
+            color="inherit"
+          />,
+        ];
+      }
+    }
   ];
 
   return (
@@ -58,9 +89,9 @@ export function Main({ loaderData }: Route.ComponentProps) {
             sx={{ border: 0 }}
           />
         </CardContent>
-        <CardActions sx={{justifyContent: 'flex-end'}}>
-          <Button variant="outlined" color="primary" onClick={showAddDialog}>
-            Add
+        <CardActions sx={{ justifyContent: 'flex-end' }}>
+          <Button variant="contained" color="primary" onClick={showAddDialog} disableElevation={true}>
+            Add Sequence
           </Button>
         </CardActions>
       </Card>

@@ -54,12 +54,9 @@ pub async fn update(
 #[axum::debug_handler]
 pub async fn delete(
     State(app_state): State<SharedAppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<i32>,
 ) -> Result<StatusCode, Error> {
-    todo!("delete resource via labster_db's APIs, trace, and respond!")
 
-    /* Example:
     entities::sequences::delete(id, &app_state.db_pool).await?;
     Ok(StatusCode::NO_CONTENT)
-    */
 }
