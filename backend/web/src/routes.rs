@@ -16,6 +16,7 @@ pub fn init_routes(app_state: AppState) -> Router {
         .route("/sequences", get(controllers::sequences::read_all))
         .route("/sequences", post(controllers::sequences::create))
         .route("/sequences/:id", delete(controllers::sequences::delete))
+        .route("/sequences/:id", get(controllers::sequences::read_one))
         .layer(CorsLayer::permissive())
         .with_state(shared_app_state)
 }

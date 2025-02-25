@@ -27,14 +27,10 @@ pub async fn read_all(
 #[axum::debug_handler]
 pub async fn read_one(
     State(app_state): State<SharedAppState>,
-    Path(id): Path<Uuid>,
-) -> Result<() /* e.g. Json<entities::sequences::Sequence> */, Error> {
-    todo!("load resource via labster_db's APIs, trace, and respond!")
-
-    /* Example:
+    Path(id): Path<i32>,
+) -> Result<Json<entities::sequences::Sequence>, Error> {
     let sequence = entities::sequences::load(id, &app_state.db_pool).await?;
     Ok(Json(sequence))
-    */
 }
 
 #[axum::debug_handler]
