@@ -1,5 +1,5 @@
 import { DataGrid, GridActionsCellItem, type GridColDef, type GridRowId } from '@mui/x-data-grid';
-import { Box, Button, Card, CardActions, CardContent, CardHeader, Container, Typography } from '@mui/material'
+import { Button, CardContent, CardHeader, Container, Paper, Typography } from '@mui/material'
 import { useState } from 'react'
 
 import type { Route } from "./+types/add-dialog";
@@ -77,23 +77,21 @@ export function Main({ loaderData }: Route.ComponentProps) {
 
   return (
     <Container>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Card variant="outlined">
+        <Paper variant="outlined">
           <CardHeader title="Sequences" action={<Button variant="contained" color="primary" onClick={showAddDialog} disableElevation>Add Sequence</Button>} />
           <CardContent>
             <DataGrid
               rows={sequences}
               columns={columns}
-              initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
+              initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
               pageSizeOptions={[5, 10]}
               checkboxSelection
               getRowId={(row) => row.identifier}
               sx={{ border: 0 }}
             />
           </CardContent>
-        </Card>
+        </Paper>
         <AddDialog open={addDialogVisible} handleClose={() => setAddDialogVisible(false)} addSequence={addSequence} />
-      </Box>
     </Container>
   )
 }
