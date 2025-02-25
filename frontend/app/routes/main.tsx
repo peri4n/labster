@@ -1,5 +1,5 @@
 import { DataGrid, GridActionsCellItem, type GridColDef, type GridRowId } from '@mui/x-data-grid';
-import { Box, Button, Card, CardActions, CardContent, Typography } from '@mui/material'
+import { Box, Button, Card, CardActions, CardContent, CardHeader, Container, Typography } from '@mui/material'
 import { useState } from 'react'
 
 import type { Route } from "./+types/add-dialog";
@@ -76,27 +76,25 @@ export function Main({ loaderData }: Route.ComponentProps) {
   ];
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Card variant="outlined">
-        <CardContent>
-          <DataGrid
-            rows={sequences}
-            columns={columns}
-            initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
-            pageSizeOptions={[5, 10]}
-            checkboxSelection
-            getRowId={(row) => row.identifier}
-            sx={{ border: 0 }}
-          />
-        </CardContent>
-        <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained" color="primary" onClick={showAddDialog} disableElevation={true}>
-            Add Sequence
-          </Button>
-        </CardActions>
-      </Card>
-      <AddDialog open={addDialogVisible} handleClose={() => setAddDialogVisible(false)} addSequence={addSequence} />
-    </Box>
+    <Container>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Card variant="outlined">
+          <CardHeader title="Sequences" action={<Button variant="contained" color="primary" onClick={showAddDialog} disableElevation>Add Sequence</Button>} />
+          <CardContent>
+            <DataGrid
+              rows={sequences}
+              columns={columns}
+              initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
+              pageSizeOptions={[5, 10]}
+              checkboxSelection
+              getRowId={(row) => row.identifier}
+              sx={{ border: 0 }}
+            />
+          </CardContent>
+        </Card>
+        <AddDialog open={addDialogVisible} handleClose={() => setAddDialogVisible(false)} addSequence={addSequence} />
+      </Box>
+    </Container>
   )
 }
 
