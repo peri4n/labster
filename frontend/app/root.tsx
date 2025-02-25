@@ -1,5 +1,6 @@
 import {
   isRouteErrorResponse,
+  Link,
   Links,
   Meta,
   Outlet,
@@ -7,9 +8,10 @@ import {
   ScrollRestoration,
 } from "react-router";
 
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import type { Route } from "./+types/root";
 import "./app.css";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { AppBar, Box, CssBaseline, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -25,7 +27,7 @@ export const links: Route.LinksFunction = () => [
 ];
 
 
-export const theme = createTheme({
+const theme = createTheme({
   palette: {
     primary: {
       main: '#3fb596',
@@ -40,6 +42,8 @@ export const theme = createTheme({
   },
 });
 
+const drawerWidth = 240;
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider theme={theme}>
@@ -51,7 +55,58 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Links />
         </head>
         <body>
-          {children}
+          <Box sx={{ display: 'flex' }}>
+            <CssBaseline />
+            <AppBar
+              position="fixed"
+              sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
+              elevation={0}
+            >
+              <Toolbar>
+                <Typography variant="h6" noWrap component="div">
+                  Labster
+                </Typography>
+              </Toolbar>
+            </AppBar>
+            <Drawer
+              sx={{
+                width: drawerWidth,
+                flexShrink: 0,
+                '& .MuiDrawer-paper': {
+                  width: drawerWidth,
+                  boxSizing: 'border-box',
+                },
+              }}
+              variant="permanent"
+              anchor="left"
+            >
+              <Toolbar />
+              <Divider />
+              <List>
+                <Link to="/">
+                  <ListItem key="Home" disablePadding>
+                    <ListItemButton disableRipple>
+                      <ListItemText primary="Home" />
+                    </ListItemButton>
+                  </ListItem>
+                </Link>
+                <Link to="/sequences">
+                  <ListItem key="Sequences" disablePadding>
+                    <ListItemButton disableRipple>
+                      <ListItemText primary="Sequences" />
+                    </ListItemButton>
+                  </ListItem>
+                </Link>
+              </List>
+            </Drawer>
+            <Box
+              component="main"
+              sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
+            >
+              <Toolbar />
+              {children}
+            </Box>
+          </Box>
           <ScrollRestoration />
           <Scripts />
         </body>
@@ -61,7 +116,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <Outlet />
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

@@ -1,6 +1,6 @@
 import type { Sequence } from "~/models/sequence";
 import type { Route } from './+types/SequenceDetailsPage';
-import { Typography } from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 
 export async function clientLoader({
   params,
@@ -12,7 +12,9 @@ export async function clientLoader({
 
 export function SequenceDetailsPage({ loaderData }: Route.ComponentProps) {
   return (
-    <Typography>View: {JSON.stringify(loaderData.sequence)}</Typography>
+    <Container>
+      <Typography>View: {JSON.stringify(loaderData.sequence)}</Typography>
+    </Container>
   )
 
 }

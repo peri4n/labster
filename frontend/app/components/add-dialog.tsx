@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
-import type { Sequence } from "~/routes/main";
+import type { Sequence } from "~/models/sequence";
 
 interface AddDialogProps {
   open: boolean;
