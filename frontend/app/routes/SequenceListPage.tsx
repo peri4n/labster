@@ -64,7 +64,7 @@ export function SequenceListPage({ loaderData }: Route.ComponentProps) {
   ];
 
   return (
-    <Container>
+    <>
       <Paper variant="outlined">
         <CardHeader title="Sequences" action={<Button variant="contained" color="primary" onClick={showAddDialog} disableElevation>Add Sequence</Button>} />
         <CardContent>
@@ -80,7 +80,7 @@ export function SequenceListPage({ loaderData }: Route.ComponentProps) {
         </CardContent>
       </Paper>
       <AddDialog open={addDialogVisible} handleClose={() => setAddDialogVisible(false)} addSequence={addSequence} />
-    </Container>
+    </>
   )
 }
 

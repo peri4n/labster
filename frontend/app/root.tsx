@@ -42,7 +42,8 @@ const theme = createTheme({
   },
 });
 
-const drawerWidth = 240;
+
+const drawerWidth = 180;
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -57,11 +58,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <body>
           <Box sx={{ display: 'flex' }}>
             <CssBaseline />
-            <AppBar
-              position="fixed"
-              sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
-              elevation={0}
-            >
+            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
               <Toolbar>
                 <Typography variant="h6" noWrap component="div">
                   Labster
@@ -69,46 +66,39 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </Toolbar>
             </AppBar>
             <Drawer
+              variant="permanent"
               sx={{
                 width: drawerWidth,
                 flexShrink: 0,
-                '& .MuiDrawer-paper': {
-                  width: drawerWidth,
-                  boxSizing: 'border-box',
-                },
+                [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
               }}
-              variant="permanent"
-              anchor="left"
             >
               <Toolbar />
-              <Divider />
-              <List>
-                <Link to="/">
-                  <ListItem key="Home" disablePadding>
-                    <ListItemButton disableRipple>
-                      <ListItemText primary="Home" />
-                    </ListItemButton>
-                  </ListItem>
-                </Link>
-                <Link to="/sequences">
-                  <ListItem key="Sequences" disablePadding>
-                    <ListItemButton disableRipple>
-                      <ListItemText primary="Sequences" />
-                    </ListItemButton>
-                  </ListItem>
-                </Link>
-              </List>
+              <Box sx={{ overflow: 'auto' }}>
+                <List>
+                  <Link to="/">
+                    <ListItem key="Home" disablePadding>
+                      <ListItemButton disableRipple>
+                        <ListItemText primary="Home" />
+                      </ListItemButton>
+                    </ListItem>
+                  </Link>
+                  <Link to="/sequences">
+                    <ListItem key="Sequences" disablePadding>
+                      <ListItemButton disableRipple>
+                        <ListItemText primary="Sequences" />
+                      </ListItemButton>
+                    </ListItem>
+                  </Link>
+                </List>
+              </Box>
             </Drawer>
-            <Box
-              component="main"
-              sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
-            >
+            <Box component="main" sx={{ flexGrow: 1, p: 3, ml: `${drawerWidth}px` }}>
               <Toolbar />
               {children}
             </Box>
           </Box>
-          <ScrollRestoration />
-          <Scripts />
+          <Scripts/>
         </body>
       </html>
     </ThemeProvider>
