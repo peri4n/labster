@@ -11,6 +11,16 @@ export async function clientLoader({
   return { sequence: result };
 }
 
+export async function clientAction({ params }: Route.ClientLoaderArgs) {
+  console.log("delete action");
+  const response = await fetch(`http://localhost:3000/sequences/${params.id}`, {
+    method: "DELETE",
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  });
+}
+
 type DNAVisualizerProps = {
   sequence: string;
 };
