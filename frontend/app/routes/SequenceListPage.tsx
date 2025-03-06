@@ -1,10 +1,10 @@
-import { DataGrid, GridActionsCellItem, type GridColDef, type GridRowId } from '@mui/x-data-grid';
-import { Button, CardContent, CardHeader, Container, Paper, Typography } from '@mui/material'
+import { DataGrid, GridActionsCellItem, type GridColDef } from '@mui/x-data-grid';
+import { Button, CardContent, CardHeader, Paper, Typography } from '@mui/material'
 import { useState } from 'react'
 import type { Sequence } from "~/models/sequence";
 import AddDialog from '../components/add-dialog';
 import type { Route } from './+types/SequenceListPage';
-import { NavLink } from 'react-router';
+import { NavLink, useFetcher } from 'react-router';
 
 export async function clientLoader() {
   const response = await fetch('http://localhost:3000/sequences')
@@ -12,30 +12,23 @@ export async function clientLoader() {
   return { sequences: result };
 }
 
+export async function clientAction({ request }: Route.ClientActionArgs) {
+  let sequenceEntry = await request.json();
+  await fetch('http://localhost:3000/sequences', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ ...sequenceEntry })
+  });
+}
+
 export function SequenceListPage({ loaderData }: Route.ComponentProps) {
-  let [sequences, setSequences] = useState<Sequence[]>(loaderData.sequences);
   let [addDialogVisible, setAddDialogVisible] = useState(false);
+  let fetcher = useFetcher();
 
   function showAddDialog() {
     setAddDialogVisible(true)
-  }
-
-  function addSequence(sequence: Sequence) {
-    setSequences([...sequences, sequence])
-  }
-
-  function removeSequenceWithId(id: GridRowId) {
-    setSequences(sequences.filter(s => s.id != id))
-  }
-
-  async function handleDeleteClick(id: GridRowId) {
-    await fetch(`http://localhost:3000/sequences/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-    removeSequenceWithId(id)
   }
 
   const columns: GridColDef[] = [
@@ -50,11 +43,12 @@ export function SequenceListPage({ loaderData }: Route.ComponentProps) {
       cellClassName: 'actions',
       getActions: ({ row }) => {
         return [
-          <NavLink to="/sequences/1">Details</NavLink>,
+
+          <NavLink to={`/sequences/${row.id}`}>Details</NavLink>,
           <GridActionsCellItem
             icon={<Typography>Delete</Typography>}
             label="Delete"
-            onClick={() => handleDeleteClick(row.id)}
+            onClick={() => fetcher.submit({ id: row.id }, { method: "delete", action: `/sequences/${row.id}`, encType: 'application/json' })}
             color="inherit"
             disableRipple
           />,
@@ -69,17 +63,17 @@ export function SequenceListPage({ loaderData }: Route.ComponentProps) {
         <CardHeader title="Sequences" action={<Button variant="contained" color="primary" onClick={showAddDialog} disableElevation>Add Sequence</Button>} />
         <CardContent>
           <DataGrid
-            rows={sequences}
+            rows={loaderData.sequences}
             columns={columns}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
             pageSizeOptions={[5, 10]}
             checkboxSelection
-            getRowId={(row) => row.identifier}
+            getRowId={(row) => row.id}
             sx={{ border: 0 }}
           />
         </CardContent>
       </Paper>
-      <AddDialog open={addDialogVisible} handleClose={() => setAddDialogVisible(false)} addSequence={addSequence} />
+      <AddDialog open={addDialogVisible} handleClose={() => setAddDialogVisible(false)} />
     </>
   )
 }

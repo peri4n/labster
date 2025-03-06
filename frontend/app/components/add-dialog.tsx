@@ -1,32 +1,22 @@
 import { useState } from "react";
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
-import type { Sequence } from "~/models/sequence";
+import { useFetcher } from "react-router";
 
 interface AddDialogProps {
   open: boolean;
   handleClose: () => void;
-  addSequence: (sequence: Sequence) => void;
 }
 
-function AddDialog({ open, handleClose, addSequence }: AddDialogProps) {
+function AddDialog({ open, handleClose }: AddDialogProps) {
   const [identifier, setIdentifier] = useState('');
   const [description, setDescription] = useState('');
   const [sequence, setSequence] = useState('');
+  let fetcher = useFetcher();
 
   async function handleAdd(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
-    const result = await fetch('http://localhost:3000/sequences', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ identifier, description: '', sequence })
-    }).then(res => res.json());
-    setSequence('');
-    setIdentifier('');
-    setDescription('');
-    addSequence(result);
+    fetcher.submit({ identifier, description, sequence }, { method: "post", action: "/sequences", encType: 'application/json' });
     handleClose();
   }
 
@@ -58,6 +48,7 @@ function AddDialog({ open, handleClose, addSequence }: AddDialogProps) {
             margin="dense"
             id="sequence"
             label="Sequence"
+            multiline
             type="text"
             fullWidth
             value={sequence}
