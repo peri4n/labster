@@ -16,8 +16,7 @@ function AddDialog({ open, handleClose }: AddDialogProps) {
 
   async function handleAdd(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
-    console.log(identifier, description, sequence);
-    fetcher.submit({ identifier, description, sequence }, { method: "post", action: "/sequences" });
+    fetcher.submit({ identifier, description, sequence }, { method: "post", action: "/sequences", encType: 'application/json' });
     handleClose();
   }
 

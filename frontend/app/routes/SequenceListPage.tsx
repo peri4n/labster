@@ -13,13 +13,13 @@ export async function clientLoader() {
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
-  console.log('add sequence');
+  let sequenceEntry = await request.json();
   await fetch('http://localhost:3000/sequences', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ identifier: "foo", description: "bar",  sequence: "aorisntaorisnet" })
+    body: JSON.stringify({ ...sequenceEntry })
   });
 }
 
