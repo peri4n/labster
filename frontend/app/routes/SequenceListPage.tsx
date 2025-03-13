@@ -1,5 +1,5 @@
 import { DataGrid, GridActionsCellItem, type GridColDef } from '@mui/x-data-grid';
-import { Button, CardContent, CardHeader, Paper, Typography } from '@mui/material'
+import { Button, CardContent, CardHeader, Chip, Paper, Typography } from '@mui/material'
 import { useState } from 'react'
 import type { Sequence } from "~/models/sequence";
 import AddDialog from '../components/add-dialog';
@@ -19,8 +19,16 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ ...sequenceEntry })
+    body: JSON.stringify({ ...sequenceEntry, alphabet: 'Dna' })
   });
+}
+
+function renderAplhabetCell(alphabet: string) {
+  switch (alphabet) {
+    case 'Dna': return (<Chip label="DNA" color="primary" />)
+    case 'Rna': return (<Chip label="RNA" color="primary" />)
+    case 'Protein': return (<Chip label="Protein" color="primary" />)
+  }
 }
 
 export function SequenceListPage({ loaderData }: Route.ComponentProps) {
@@ -33,6 +41,7 @@ export function SequenceListPage({ loaderData }: Route.ComponentProps) {
 
   const columns: GridColDef[] = [
     { field: 'identifier', headerName: 'Identifier', width: 130 },
+    { field: 'alphabet', headerName: 'Alphabet', width: 100, renderCell: (params) => renderAplhabetCell(params.value) },
     { field: 'description', headerName: 'Description', width: 200 },
     { field: 'sequence', headerName: 'Sequence', flex: 1 },
     {

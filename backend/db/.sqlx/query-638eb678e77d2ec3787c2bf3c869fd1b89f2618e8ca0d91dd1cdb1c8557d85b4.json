@@ -1,0 +1,61 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE sequences SET identifier = $1, alphabet = ($2::text)::alphabet , description = $3, sequence = $4 WHERE id = $5 RETURNING id, identifier, alphabet as \"alphabet!: Alphabet\", description, sequence",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "identifier",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "alphabet!: Alphabet",
+        "type_info": {
+          "Custom": {
+            "name": "alphabet",
+            "kind": {
+              "Enum": [
+                "dna",
+                "rna",
+                "protein"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "sequence",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Text",
+        "Text",
+        "Text",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "638eb678e77d2ec3787c2bf3c869fd1b89f2618e8ca0d91dd1cdb1c8557d85b4"
+}

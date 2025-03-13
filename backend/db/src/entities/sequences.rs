@@ -3,18 +3,34 @@ use serde::Serialize;
 use sqlx::Postgres;
 use validator::Validate;
 
+#[derive(Serialize, Debug, Deserialize, sqlx::Type, strum::Display)]
+#[sqlx(type_name = "alphabet", rename_all = "lowercase")]
+enum Alphabet {
+    #[strum(serialize = "dna")]
+    Dna,
+
+    #[strum(serialize = "rna")]
+    Rna,
+
+    #[strum(serialize = "protein")]
+    Protein,
+}
+
 #[derive(Serialize, Debug, Deserialize)]
 pub struct Sequence {
     id: i32,
+    alphabet: Alphabet,
     identifier: String,
     description: String,
     sequence: String,
 }
 
-#[derive(Deserialize, Validate, Clone)]
+#[derive(Deserialize, Validate)]
 pub struct SequenceChangeset {
     #[validate(length(min = 1))]
     identifier: String,
+
+    alphabet: Alphabet,
 
     description: String,
 
@@ -25,7 +41,7 @@ pub struct SequenceChangeset {
 pub async fn load_all(
     executor: impl sqlx::Executor<'_, Database = Postgres>,
 ) -> Result<Vec<Sequence>, crate::Error> {
-    let sequences = sqlx::query_as!(Sequence, "SELECT id, identifier, description, sequence FROM sequences")
+    let sequences = sqlx::query_as!(Sequence, r#"SELECT id, identifier, alphabet as "alphabet: Alphabet", description, sequence FROM sequences"#)
         .fetch_all(executor)
         .await?;
     Ok(sequences)
@@ -37,7 +53,7 @@ pub async fn load(
 ) -> Result<Sequence, crate::Error> {
     match sqlx::query_as!(
         Sequence,
-        "SELECT id, identifier, description, sequence FROM sequences WHERE id = $1",
+        r#"SELECT id, identifier, alphabet as "alphabet: _", description, sequence FROM sequences WHERE id = $1"#,
         id
     )
     .fetch_optional(executor)
@@ -56,8 +72,9 @@ pub async fn create(
     sequence.validate()?;
 
     let record = sqlx::query!(
-        "INSERT INTO sequences (identifier, description, sequence) VALUES ($1, $2, $3) RETURNING id",
+        "INSERT INTO sequences (identifier, alphabet, description, sequence) VALUES ($1, ($2::text)::alphabet, $3, $4) RETURNING id",
         sequence.identifier,
+        sequence.alphabet.to_string(),
         sequence.description,
         sequence.sequence,
     )
@@ -68,6 +85,7 @@ pub async fn create(
     Ok(Sequence {
         id: record.id,
         identifier: sequence.identifier,
+        alphabet: sequence.alphabet,
         description: sequence.description,
         sequence: sequence.sequence
     })
@@ -81,8 +99,9 @@ pub async fn update(
     sequence.validate()?;
 
     match sqlx::query!(
-        "UPDATE sequences SET identifier = $1, description = $2, sequence = $3 WHERE id = $4 RETURNING id, identifier, description, sequence",
+        r#"UPDATE sequences SET identifier = $1, alphabet = ($2::text)::alphabet , description = $3, sequence = $4 WHERE id = $5 RETURNING id, identifier, alphabet as "alphabet!: Alphabet", description, sequence"#,
         sequence.identifier,
+        sequence.alphabet.to_string(),
         sequence.description,
         sequence.sequence,
         id
@@ -94,6 +113,7 @@ pub async fn update(
         Some(record) => Ok(Sequence {
             id: record.id,
             identifier: record.identifier,
+            alphabet: record.alphabet,
             description: record.description,
             sequence: record.sequence,
         }),
