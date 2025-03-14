@@ -4,7 +4,7 @@ import { useState } from 'react'
 import type { Sequence } from "~/models/sequence";
 import AddDialog from '../components/add-dialog';
 import type { Route } from './+types/SequenceListPage';
-import { NavLink, useFetcher, useNavigate } from 'react-router';
+import { useFetcher, useNavigate } from 'react-router';
 import { DeleteOutline, Search } from '@mui/icons-material';
 
 export async function clientLoader() {
@@ -14,21 +14,21 @@ export async function clientLoader() {
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
-  let sequenceEntry = await request.json();
+  let sequence: Sequence = await request.json();
   await fetch('http://localhost:3000/sequences', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ ...sequenceEntry, alphabet: 'Dna' })
+    body: JSON.stringify({ ...sequence })
   });
 }
 
 function renderAplhabetCell(alphabet: string) {
   switch (alphabet) {
-    case 'Dna': return (<Chip label="DNA" color="primary" />)
-    case 'Rna': return (<Chip label="RNA" color="primary" />)
-    case 'Protein': return (<Chip label="Protein" color="primary" />)
+    case 'dna': return (<Chip label="DNA" color="primary" />)
+    case 'rna': return (<Chip label="RNA" color="primary" />)
+    case 'protein': return (<Chip label="Protein" color="primary" />)
   }
 }
 

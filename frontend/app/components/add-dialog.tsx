@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent } from "react";
 
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Typography } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField, Typography, type SelectChangeEvent } from "@mui/material";
 import { useFetcher } from "react-router";
 
 interface AddDialogProps {
@@ -12,11 +12,12 @@ function AddDialog({ open, handleClose }: AddDialogProps) {
   const [identifier, setIdentifier] = useState('');
   const [description, setDescription] = useState('');
   const [sequence, setSequence] = useState('');
+  const [alphabet, setAlphabet] = useState('dna');
   let fetcher = useFetcher();
 
   async function handleAdd(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
-    fetcher.submit({ identifier, description, sequence }, { method: "post", action: "/sequences", encType: 'application/json' });
+    fetcher.submit({ identifier, description, sequence, alphabet }, { method: "post", action: "/sequences", encType: 'application/json' });
     handleClose();
   }
 
@@ -29,17 +30,32 @@ function AddDialog({ open, handleClose }: AddDialogProps) {
             Please fill in the form below to create a new sequence.
           </DialogContentText>
           <form noValidate autoComplete="off">
-            <TextField
-              sx={{ my: 2 }}
-              autoFocus
-              id="identifier"
-              label="Identifier"
-              type="text"
-              value={identifier}
-              fullWidth
-              required
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setIdentifier(e.target.value)}
-            />
+            <div className="flex">
+              <TextField
+                sx={{ my: 2, flexGrow: 1 }}
+                autoFocus
+                id="identifier"
+                label="Identifier"
+                type="text"
+                value={identifier}
+                required
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setIdentifier(e.target.value)}
+              />
+              <FormControl variant="standard" sx={{my: 3, mx: 5, minWidth: 100}}>
+                <InputLabel id="alphabet-label">Alphabet</InputLabel>
+                <Select
+                  labelId="alphabet-label"
+                  id="alphabet-select"
+                  value={alphabet}
+                  label="Alphabet"
+                  onChange={(e: SelectChangeEvent) => setAlphabet(e.target.value)}
+                >
+                  <MenuItem value={'dna'}>DNA</MenuItem>
+                  <MenuItem value={'rna'}>RNA</MenuItem>
+                  <MenuItem value={'protein'}>Protein</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
             <TextField
               sx={{ mb: 2 }}
               id="description"
