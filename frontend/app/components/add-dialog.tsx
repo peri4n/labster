@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Typography } from "@mui/material";
 import { useFetcher } from "react-router";
 
 interface AddDialogProps {
@@ -22,38 +22,46 @@ function AddDialog({ open, handleClose }: AddDialogProps) {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Add Sequence</DialogTitle>
+      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title" maxWidth="lg" fullWidth>
+        <DialogTitle id="form-dialog-title" variant="h4" color="primary">Create new sequence</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Name"
-            type="text"
-            fullWidth
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            id="description"
-            label="Description"
-            type="text"
-            fullWidth
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            id="sequence"
-            label="Sequence"
-            multiline
-            type="text"
-            fullWidth
-            value={sequence}
-            onChange={(e) => setSequence(e.target.value)}
-          />
+          <DialogContentText>
+            Please fill in the form below to create a new sequence.
+          </DialogContentText>
+          <form noValidate autoComplete="off">
+            <TextField
+              sx={{ my: 2 }}
+              autoFocus
+              id="identifier"
+              label="Identifier"
+              type="text"
+              value={identifier}
+              fullWidth
+              required
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setIdentifier(e.target.value)}
+            />
+            <TextField
+              sx={{ mb: 2 }}
+              id="description"
+              label="Description"
+              type="text"
+              value={description}
+              fullWidth
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)}
+            />
+            <TextField
+              sx={{ mb: 2 }}
+              id="sequence"
+              label="Sequence"
+              type="text"
+              required
+              multiline
+              rows={4}
+              fullWidth
+              value={sequence}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setSequence(e.target.value)}
+            />
+          </form>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">

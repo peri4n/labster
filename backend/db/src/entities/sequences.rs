@@ -4,6 +4,7 @@ use sqlx::Postgres;
 use validator::Validate;
 
 #[derive(Serialize, Debug, Deserialize, sqlx::Type, strum::Display)]
+#[serde(rename_all = "lowercase")]
 #[sqlx(type_name = "alphabet", rename_all = "lowercase")]
 enum Alphabet {
     #[strum(serialize = "dna")]
