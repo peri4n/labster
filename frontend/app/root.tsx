@@ -5,7 +5,6 @@ import {
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration,
 } from "react-router";
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -93,7 +92,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </List>
               </Box>
             </Drawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 3, ml: `${drawerWidth}px` }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
               <Toolbar />
               {children}
             </Box>

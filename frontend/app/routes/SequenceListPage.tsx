@@ -4,7 +4,8 @@ import { useState } from 'react'
 import type { Sequence } from "~/models/sequence";
 import AddDialog from '../components/add-dialog';
 import type { Route } from './+types/SequenceListPage';
-import { NavLink, useFetcher } from 'react-router';
+import { NavLink, useFetcher, useNavigate } from 'react-router';
+import { DeleteOutline, Search } from '@mui/icons-material';
 
 export async function clientLoader() {
   const response = await fetch('http://localhost:3000/sequences')
@@ -34,6 +35,7 @@ function renderAplhabetCell(alphabet: string) {
 export function SequenceListPage({ loaderData }: Route.ComponentProps) {
   let [addDialogVisible, setAddDialogVisible] = useState(false);
   let fetcher = useFetcher();
+  let navigate = useNavigate();
 
   function showAddDialog() {
     setAddDialogVisible(true)
@@ -52,10 +54,15 @@ export function SequenceListPage({ loaderData }: Route.ComponentProps) {
       cellClassName: 'actions',
       getActions: ({ row }) => {
         return [
-
-          <NavLink to={`/sequences/${row.id}`}>Details</NavLink>,
+          <GridActionsCellItem 
+            icon={<Search />}
+            label="Details"
+            onClick={() => navigate(`/sequences/${row.id}`)}
+            color="inherit"
+            disableRipple
+          />,
           <GridActionsCellItem
-            icon={<Typography>Delete</Typography>}
+            icon={<DeleteOutline />}
             label="Delete"
             onClick={() => fetcher.submit({ id: row.id }, { method: "delete", action: `/sequences/${row.id}`, encType: 'application/json' })}
             color="inherit"
