@@ -12,7 +12,6 @@ export async function clientLoader({
 }
 
 export async function clientAction({ params }: Route.ClientLoaderArgs) {
-  console.log("delete action");
   await fetch(`http://localhost:3000/sequences/${params.id}`, {
     method: "DELETE",
     headers: {
