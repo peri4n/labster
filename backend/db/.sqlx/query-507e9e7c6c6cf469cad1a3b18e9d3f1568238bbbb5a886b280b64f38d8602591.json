@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, identifier, alphabet as \"alphabet: Alphabet\", description, sequence FROM sequences",
+  "query": "SELECT id, identifier, alphabet as \"alphabet: Alphabet\", description, sequence, created_at FROM sequences",
   "describe": {
     "columns": [
       {
@@ -38,6 +38,11 @@
         "ordinal": 4,
         "name": "sequence",
         "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "created_at",
+        "type_info": "Timestamp"
       }
     ],
     "parameters": {
@@ -48,8 +53,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "2e382f99a8aa2a0d84d213747a3b030093e5923cd59698496da2d3dc974626e5"
+  "hash": "507e9e7c6c6cf469cad1a3b18e9d3f1568238bbbb5a886b280b64f38d8602591"
 }

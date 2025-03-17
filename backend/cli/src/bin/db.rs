@@ -255,6 +255,8 @@ async fn seed(config: &DatabaseConfig) -> Result<(), anyhow::Error> {
         .await
         .context("Failed to execute seeds!")?;
 
+    transaction.commit().await.context("Failed to commit transaction!")?;
+
     Ok(())
 }
 

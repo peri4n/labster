@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, identifier, alphabet as \"alphabet: _\", description, sequence FROM sequences WHERE id = $1",
+  "query": "UPDATE sequences SET identifier = $1, alphabet = ($2::text)::alphabet , description = $3, sequence = $4 WHERE id = $5 RETURNING id, identifier, alphabet as \"alphabet!: Alphabet\", description, sequence, created_at",
   "describe": {
     "columns": [
       {
@@ -15,7 +15,7 @@
       },
       {
         "ordinal": 2,
-        "name": "alphabet: _",
+        "name": "alphabet!: Alphabet",
         "type_info": {
           "Custom": {
             "name": "alphabet",
@@ -38,10 +38,19 @@
         "ordinal": 4,
         "name": "sequence",
         "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "created_at",
+        "type_info": "Timestamp"
       }
     ],
     "parameters": {
       "Left": [
+        "Varchar",
+        "Text",
+        "Text",
+        "Text",
         "Int4"
       ]
     },
@@ -50,8 +59,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "5e06adb975ed32fe29f844b0ce9d9767d764399ec2f91f760b26a4988c79ff2a"
+  "hash": "ab4992a61a6f976b8e92cbc36885385399bebc4156686e70486477ba7764327a"
 }

@@ -27,8 +27,8 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 function renderAplhabetCell(alphabet: string) {
   switch (alphabet) {
     case 'dna': return (<Chip label="DNA" color="primary" />)
-    case 'rna': return (<Chip label="RNA" color="primary" />)
-    case 'protein': return (<Chip label="Protein" color="primary" />)
+    case 'rna': return (<Chip label="RNA" color="error" />)
+    case 'protein': return (<Chip label="Protein" color="info" />)
   }
 }
 
@@ -46,6 +46,7 @@ export function SequenceListPage({ loaderData }: Route.ComponentProps) {
     { field: 'alphabet', headerName: 'Alphabet', width: 100, renderCell: (params) => renderAplhabetCell(params.value) },
     { field: 'description', headerName: 'Description', width: 200 },
     { field: 'sequence', headerName: 'Sequence', flex: 1 },
+    { field: 'created_at', headerName: 'Created at', width: 200, renderCell: (params) => new Date(params.value).toLocaleString() },
     {
       field: 'actions',
       type: 'actions',

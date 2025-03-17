@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use serde::Serialize;
+use sqlx::types::chrono;
 use sqlx::Postgres;
 use validator::Validate;
 
@@ -24,6 +25,7 @@ pub struct Sequence {
     identifier: String,
     description: String,
     sequence: String,
+    created_at: chrono::NaiveDateTime,
 }
 
 #[derive(Deserialize, Validate)]
@@ -42,7 +44,7 @@ pub struct SequenceChangeset {
 pub async fn load_all(
     executor: impl sqlx::Executor<'_, Database = Postgres>,
 ) -> Result<Vec<Sequence>, crate::Error> {
-    let sequences = sqlx::query_as!(Sequence, r#"SELECT id, identifier, alphabet as "alphabet: Alphabet", description, sequence FROM sequences"#)
+    let sequences = sqlx::query_as!(Sequence, r#"SELECT id, identifier, alphabet as "alphabet: Alphabet", description, sequence, created_at FROM sequences"#)
         .fetch_all(executor)
         .await?;
     Ok(sequences)
@@ -54,7 +56,7 @@ pub async fn load(
 ) -> Result<Sequence, crate::Error> {
     match sqlx::query_as!(
         Sequence,
-        r#"SELECT id, identifier, alphabet as "alphabet: _", description, sequence FROM sequences WHERE id = $1"#,
+        r#"SELECT id, identifier, alphabet as "alphabet: _", description, sequence, created_at FROM sequences WHERE id = $1"#,
         id
     )
     .fetch_optional(executor)
@@ -73,7 +75,7 @@ pub async fn create(
     sequence.validate()?;
 
     let record = sqlx::query!(
-        "INSERT INTO sequences (identifier, alphabet, description, sequence) VALUES ($1, ($2::text)::alphabet, $3, $4) RETURNING id",
+        "INSERT INTO sequences (identifier, alphabet, description, sequence) VALUES ($1, ($2::text)::alphabet, $3, $4) RETURNING id, created_at",
         sequence.identifier,
         sequence.alphabet.to_string(),
         sequence.description,
@@ -88,7 +90,8 @@ pub async fn create(
         identifier: sequence.identifier,
         alphabet: sequence.alphabet,
         description: sequence.description,
-        sequence: sequence.sequence
+        sequence: sequence.sequence,
+        created_at: record.created_at,
     })
 }
 
@@ -100,7 +103,7 @@ pub async fn update(
     sequence.validate()?;
 
     match sqlx::query!(
-        r#"UPDATE sequences SET identifier = $1, alphabet = ($2::text)::alphabet , description = $3, sequence = $4 WHERE id = $5 RETURNING id, identifier, alphabet as "alphabet!: Alphabet", description, sequence"#,
+        r#"UPDATE sequences SET identifier = $1, alphabet = ($2::text)::alphabet , description = $3, sequence = $4 WHERE id = $5 RETURNING id, identifier, alphabet as "alphabet!: Alphabet", description, sequence, created_at"#,
         sequence.identifier,
         sequence.alphabet.to_string(),
         sequence.description,
@@ -117,6 +120,7 @@ pub async fn update(
             alphabet: record.alphabet,
             description: record.description,
             sequence: record.sequence,
+            created_at: record.created_at,
         }),
         None => Err(crate::Error::NoRecordFound),
     }

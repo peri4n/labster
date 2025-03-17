@@ -1,19 +1,37 @@
-import { useState, type ChangeEvent } from "react";
+import { Controller, useForm, type SubmitHandler } from "react-hook-form"
 
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField, Typography, type SelectChangeEvent } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, MenuItem, Select, TextField } from "@mui/material";
 import { useFetcher } from "react-router";
+import type { Alphabet } from "~/models/sequence";
 
 interface AddDialogProps {
   open: boolean;
   handleClose: () => void;
 }
 
+type AddSequenceInput = {
+  identifier: string;
+  description: string;
+  sequence: string;
+  alphabet: Alphabet;
+}
+
 function AddDialog({ open, handleClose }: AddDialogProps) {
-  const [identifier, setIdentifier] = useState('');
-  const [description, setDescription] = useState('');
-  const [sequence, setSequence] = useState('');
-  const [alphabet, setAlphabet] = useState('dna');
+  const { control, register, handleSubmit } = useForm<AddSequenceInput>({
+    defaultValues: {
+      identifier: '',
+      description: '',
+      alphabet: 'dna',
+      sequence: '',
+    }
+  });
   let fetcher = useFetcher();
+
+  const onSubmit: SubmitHandler<AddSequenceInput> = (data) => {
+    console.log(data);
+    fetcher.submit(data, { method: "post", action: "/sequences", encType: 'application/json' });
+    handleClose();
+  }
 
   return (
     <div>
@@ -23,13 +41,7 @@ function AddDialog({ open, handleClose }: AddDialogProps) {
         slotProps={{
           paper: {
             component: 'form',
-            onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-              event.preventDefault();
-              const formData = new FormData(event.currentTarget);
-              const formJson = Object.fromEntries((formData as any).entries());
-              fetcher.submit(formJson, { method: "post", action: "/sequences", encType: 'application/json' });
-              handleClose();
-            },
+            onSubmit: handleSubmit(onSubmit)
           },
         }}
         aria-labelledby="form-dialog-title"
@@ -40,57 +52,45 @@ function AddDialog({ open, handleClose }: AddDialogProps) {
           <DialogContentText>
             Please fill in the form below to create a new sequence.
           </DialogContentText>
-          <div className="flex">
-            <TextField
-              sx={{ my: 2, flexGrow: 1 }}
-              autoFocus
-              id="identifier"
-              name="identifier"
-              label="Identifier"
-              type="text"
-              value={identifier}
-              required
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setIdentifier(e.target.value)}
-            />
-            <FormControl variant="standard" sx={{ my: 3, mx: 5, minWidth: 100 }}>
-              <InputLabel id="alphabet-label">Alphabet</InputLabel>
-              <Select
-                labelId="alphabet-label"
-                id="alphabet-select"
+          <div className="flex flex-col">
+            <div className="flex flex-row">
+              <TextField
+                sx={{ my: 2, flexGrow: 1 }}
+                autoFocus
+                label="Identifier"
+                type="text"
+                {...register("identifier", { required: true })}
+              />
+              <Controller
                 name="alphabet"
-                value={alphabet}
-                label="Alphabet"
-                onChange={(e: SelectChangeEvent) => setAlphabet(e.target.value)}
-              >
-                <MenuItem value={'dna'}>DNA</MenuItem>
-                <MenuItem value={'rna'}>RNA</MenuItem>
-                <MenuItem value={'protein'}>Protein</MenuItem>
-              </Select>
-            </FormControl>
+                control={control}
+                render={({ field }) => (
+                  <Select {...field} sx={{ my: 2, ml: 2 }}>
+                    <MenuItem value={'dna'} selected>DNA</MenuItem>
+                    <MenuItem value={'rna'}>RNA</MenuItem>
+                    <MenuItem value={'protein'}>Protein</MenuItem>
+                  </Select>
+                )}
+              />
+            </div>
+            <TextField
+              sx={{ mb: 2 }}
+              label="Description"
+              type="text"
+              fullWidth
+              {...register("description")}
+            />
+            <TextField
+              sx={{ mb: 2 }}
+              label="Sequence (e.g. ACGTAGACA)"
+              type="text"
+              required
+              multiline
+              rows={4}
+              fullWidth
+              {...register("sequence", { required: true })}
+            />
           </div>
-          <TextField
-            sx={{ mb: 2 }}
-            id="description"
-            name="description"
-            label="Description"
-            type="text"
-            value={description}
-            fullWidth
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)}
-          />
-          <TextField
-            sx={{ mb: 2 }}
-            id="sequence"
-            name="sequence"
-            label="Sequence"
-            type="text"
-            required
-            multiline
-            rows={4}
-            fullWidth
-            value={sequence}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setSequence(e.target.value)}
-          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
