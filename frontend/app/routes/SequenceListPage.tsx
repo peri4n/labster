@@ -46,6 +46,7 @@ export function SequenceListPage({ loaderData }: Route.ComponentProps) {
     { field: 'alphabet', headerName: 'Alphabet', width: 100, renderCell: (params) => renderAplhabetCell(params.value) },
     { field: 'description', headerName: 'Description', width: 200 },
     { field: 'sequence', headerName: 'Sequence', flex: 1 },
+    { field: 'length', headerName: 'Length', width: 100, valueGetter: (_, row: Sequence) => row.sequence.length },
     { field: 'created_at', headerName: 'Created at', width: 200, renderCell: (params) => new Date(params.value).toLocaleString() },
     {
       field: 'actions',
