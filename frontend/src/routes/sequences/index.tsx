@@ -1,28 +1,12 @@
 import { DataGrid, GridActionsCellItem, type GridColDef } from '@mui/x-data-grid';
-import { Button, CardContent, CardHeader, Chip, Paper, Typography } from '@mui/material'
+import { Button, CardContent, CardHeader, Chip, Paper } from '@mui/material'
 import { useState } from 'react'
-import type { Sequence } from "~/models/sequence";
-import AddDialog from '../components/add-dialog';
-import type { Route } from './+types/SequenceListPage';
-import { useFetcher, useNavigate } from 'react-router';
+import type { Sequence } from "../../models/sequence";
+import AddDialog from '../../components/add-dialog';
 import { DeleteOutline, Search } from '@mui/icons-material';
+import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
+import { useMutation } from '@tanstack/react-query';
 
-export async function clientLoader() {
-  const response = await fetch('http://localhost:3000/sequences')
-  const result: Sequence[] = await response.json();
-  return { sequences: result };
-}
-
-export async function clientAction({ request }: Route.ClientActionArgs) {
-  let sequence: Sequence = await request.json();
-  await fetch('http://localhost:3000/sequences', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ ...sequence })
-  });
-}
 
 function renderAplhabetCell(alphabet: string) {
   switch (alphabet) {
@@ -32,14 +16,27 @@ function renderAplhabetCell(alphabet: string) {
   }
 }
 
-export function SequenceListPage({ loaderData }: Route.ComponentProps) {
+function SequenceListPage() {
   let [addDialogVisible, setAddDialogVisible] = useState(false);
-  let fetcher = useFetcher();
+  const { sequences } = Route.useLoaderData()
   let navigate = useNavigate();
+  let router = useRouter();
 
   function showAddDialog() {
     setAddDialogVisible(true)
   }
+
+  const deleteSequence = useMutation({
+    mutationFn: async (id) => {
+      await fetch(`http://localhost:3000/sequences/${id}`, {
+        method: "DELETE",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      router.invalidate()
+    },
+  })
 
   const columns: GridColDef[] = [
     { field: 'identifier', headerName: 'Identifier', width: 130 },
@@ -59,14 +56,14 @@ export function SequenceListPage({ loaderData }: Route.ComponentProps) {
           <GridActionsCellItem 
             icon={<Search />}
             label="Details"
-            onClick={() => navigate(`/sequences/${row.id}`)}
+            onClick={() => navigate({ to: `/sequences/$sequenceId`, params: { sequenceId: row.id } })}
             color="inherit"
             disableRipple
           />,
           <GridActionsCellItem
             icon={<DeleteOutline />}
             label="Delete"
-            onClick={() => fetcher.submit({ id: row.id }, { method: "delete", action: `/sequences/${row.id}`, encType: 'application/json' })}
+            onClick={() => deleteSequence.mutate(row.id)}
             color="inherit"
             disableRipple
           />,
@@ -81,7 +78,7 @@ export function SequenceListPage({ loaderData }: Route.ComponentProps) {
         <CardHeader title="Sequences" action={<Button variant="contained" color="primary" onClick={showAddDialog} disableElevation>Add Sequence</Button>} />
         <CardContent>
           <DataGrid
-            rows={loaderData.sequences}
+            rows={sequences}
             columns={columns}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
             pageSizeOptions={[5, 10]}
@@ -96,4 +93,11 @@ export function SequenceListPage({ loaderData }: Route.ComponentProps) {
   )
 }
 
-export default SequenceListPage
+export const Route = createFileRoute('/sequences/')({
+  loader: async () => {
+    const response = await fetch('http://localhost:3000/sequences')
+    const result: Sequence[] = await response.json();
+    return { sequences: result };
+  },
+  component: SequenceListPage,
+})

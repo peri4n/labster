@@ -1,3 +1,5 @@
+SET default_toast_compression=lz4;
+
 CREATE TYPE alphabet AS ENUM ('dna', 'rna', 'protein');
 
 -- Initial scheme for the database in PostgreSQL

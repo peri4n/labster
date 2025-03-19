@@ -1,8 +1,9 @@
 import { Controller, useForm, type SubmitHandler } from "react-hook-form"
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, MenuItem, Select, TextField } from "@mui/material";
-import { useFetcher } from "react-router";
-import type { Alphabet } from "~/models/sequence";
+import type { Alphabet, Sequence } from "../models/sequence";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 
 interface AddDialogProps {
   open: boolean;
@@ -25,11 +26,25 @@ function AddDialog({ open, handleClose }: AddDialogProps) {
       sequence: '',
     }
   });
-  let fetcher = useFetcher();
+
+  const router = useRouter();
+
+  const addSequence = useMutation({
+    mutationFn: async (sequence: AddSequenceInput) => {
+      await fetch('http://localhost:3000/sequences', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ...sequence })
+      });
+      router.invalidate()
+    },
+  })
 
   const onSubmit: SubmitHandler<AddSequenceInput> = (data) => {
     console.log(data);
-    fetcher.submit(data, { method: "post", action: "/sequences", encType: 'application/json' });
+    addSequence.mutate(data);
     handleClose();
   }
 
