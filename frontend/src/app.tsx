@@ -8,6 +8,7 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
+import { SnackbarProvider } from "util/snackbar-provider";
 
 // Create a new router instance
 const router = createRouter({ routeTree })
@@ -50,11 +51,13 @@ export function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-        <TanStackRouterDevtools router={router} />
-        <ReactQueryDevtools />
-      </QueryClientProvider>
+      <SnackbarProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+          <TanStackRouterDevtools router={router} />
+          <ReactQueryDevtools />
+        </QueryClientProvider>
+      </SnackbarProvider>
     </ThemeProvider>
   )
 };

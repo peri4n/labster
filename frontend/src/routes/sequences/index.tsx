@@ -34,8 +34,10 @@ function SequenceListPage() {
           'Content-Type': 'application/json'
         },
       });
-      router.invalidate()
     },
+    onSuccess: () => {
+      router.invalidate({filter: (match) => match.routeId === '/sequences/'});
+    }
   })
 
   const columns: GridColDef[] = [

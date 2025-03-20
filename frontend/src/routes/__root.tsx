@@ -45,6 +45,13 @@ function RootComponent() {
                 </ListItemButton>
               </ListItem>
             </Link>
+            <Link to="/collections">
+              <ListItem key="Collections" disablePadding>
+                <ListItemButton disableRipple>
+                  <ListItemText primary="Collections" />
+                </ListItemButton>
+              </ListItem>
+            </Link>
           </List>
         </Box>
       </Drawer>
