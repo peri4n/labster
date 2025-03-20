@@ -23,7 +23,7 @@ pub struct Sequence {
     id: i32,
     alphabet: Alphabet,
     identifier: String,
-    description: String,
+    description: Option<String>,
     sequence: String,
     created_at: chrono::NaiveDateTime,
 }
@@ -89,7 +89,7 @@ pub async fn create(
         id: record.id,
         identifier: sequence.identifier,
         alphabet: sequence.alphabet,
-        description: sequence.description,
+        description: Some(sequence.description),
         sequence: sequence.sequence,
         created_at: record.created_at,
     })
