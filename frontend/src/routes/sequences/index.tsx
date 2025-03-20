@@ -1,11 +1,12 @@
 import { DataGrid, GridActionsCellItem, type GridColDef } from '@mui/x-data-grid';
-import { Button, CardContent, CardHeader, Chip, Paper } from '@mui/material'
+import { Button, Card, CardContent, CardHeader, Chip } from '@mui/material'
 import { useState } from 'react'
-import type { Sequence } from "../../models/sequence";
-import AddDialog from '../../components/add-dialog';
+import type { Sequence } from "@models/sequence";
+import AddDialog from '@components/add-dialog';
 import { DeleteOutline, Search } from '@mui/icons-material';
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
 import { useMutation } from '@tanstack/react-query';
+import IndeterminateProgress from '@components/indeterminate-progress';
 
 
 function renderAplhabetCell(alphabet: string) {
@@ -36,7 +37,7 @@ function SequenceListPage() {
       });
     },
     onSuccess: () => {
-      router.invalidate({filter: (match) => match.routeId === '/sequences/'});
+      router.invalidate({ filter: (match) => match.routeId === '/sequences/' });
     }
   })
 
@@ -55,7 +56,7 @@ function SequenceListPage() {
       cellClassName: 'actions',
       getActions: ({ row }) => {
         return [
-          <GridActionsCellItem 
+          <GridActionsCellItem
             icon={<Search />}
             label="Details"
             onClick={() => navigate({ to: `/sequences/$sequenceId`, params: { sequenceId: row.id } })}
@@ -76,20 +77,20 @@ function SequenceListPage() {
 
   return (
     <>
-      <Paper variant="outlined">
+      <Card variant="outlined">
         <CardHeader title="Sequences" action={<Button variant="contained" color="primary" onClick={showAddDialog} disableElevation>Add Sequence</Button>} />
         <CardContent>
-          <DataGrid
-            rows={sequences}
-            columns={columns}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            pageSizeOptions={[5, 10]}
-            checkboxSelection
-            getRowId={(row) => row.id}
-            sx={{ border: 0 }}
-          />
+            <DataGrid
+              rows={sequences}
+              columns={columns}
+              initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+              pageSizeOptions={[5, 10]}
+              checkboxSelection
+              getRowId={(row) => row.id}
+              sx={{ border: 0 }}
+            />
         </CardContent>
-      </Paper>
+      </Card>
       <AddDialog open={addDialogVisible} handleClose={() => setAddDialogVisible(false)} />
     </>
   )
@@ -102,4 +103,5 @@ export const Route = createFileRoute('/sequences/')({
     return { sequences: result };
   },
   component: SequenceListPage,
+  pendingComponent: () => <IndeterminateProgress />
 })
