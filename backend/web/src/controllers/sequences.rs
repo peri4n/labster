@@ -1,8 +1,10 @@
 use crate::{error::Error, state::SharedAppState};
-use axum::{extract::Path, extract::State, http::StatusCode, Json};
+use axum::{extract::{Path, Query, State}, http::StatusCode, Json};
 use labster_db::entities;
 use tracing::info;
 use uuid::Uuid;
+
+use super::Pagination;
 
 #[axum::debug_handler]
 pub async fn create(
@@ -16,8 +18,9 @@ pub async fn create(
 #[axum::debug_handler]
 pub async fn read_all(
     State(app_state): State<SharedAppState>,
+    Query(pagination): Query<Pagination>,
 ) -> Result<Json<Vec<entities::sequences::Sequence>>, Error> {
-    let sequences = entities::sequences::load_all(&app_state.db_pool).await?;
+    let sequences = entities::sequences::load_all(&app_state.db_pool, pagination.offset(), pagination.per_page()).await?;
 
     info!("responding with {:?}", sequences);
 

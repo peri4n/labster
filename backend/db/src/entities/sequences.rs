@@ -43,8 +43,10 @@ pub struct SequenceChangeset {
 
 pub async fn load_all(
     executor: impl sqlx::Executor<'_, Database = Postgres>,
+    offset: usize,
+    limit: usize,
 ) -> Result<Vec<Sequence>, crate::Error> {
-    let sequences = sqlx::query_as!(Sequence, r#"SELECT id, identifier, alphabet as "alphabet: Alphabet", description, sequence, created_at FROM sequences"#)
+    let sequences = sqlx::query_as!(Sequence, r#"SELECT id, identifier, alphabet as "alphabet: Alphabet", description, sequence, created_at FROM sequences ORDER BY id LIMIT $1 OFFSET $2"#, limit as i32, offset as i32)
         .fetch_all(executor)
         .await?;
     Ok(sequences)

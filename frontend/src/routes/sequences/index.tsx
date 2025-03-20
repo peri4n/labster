@@ -1,11 +1,11 @@
 import { DataGrid, GridActionsCellItem, type GridColDef } from '@mui/x-data-grid';
 import { Button, Card, CardContent, CardHeader, Chip } from '@mui/material'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { Sequence } from "@models/sequence";
 import AddDialog from '@components/add-dialog';
 import { DeleteOutline, Search } from '@mui/icons-material';
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import IndeterminateProgress from '@components/indeterminate-progress';
 
 
@@ -19,13 +19,29 @@ function renderAplhabetCell(alphabet: string) {
 
 function SequenceListPage() {
   let [addDialogVisible, setAddDialogVisible] = useState(false);
-  const { sequences } = Route.useLoaderData()
+
   let navigate = useNavigate();
   let router = useRouter();
 
   function showAddDialog() {
     setAddDialogVisible(true)
   }
+
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 5,
+  });
+
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ['fetch-sequences', paginationModel],
+    queryFn: async () => {
+      const response = await fetch(`http://localhost:3000/sequences?page=${paginationModel.page}&per_page=${paginationModel.pageSize}`)
+      const result: Sequence[] = await response.json();
+      return result
+    },
+  })
+
+  console.log(data)
 
   const deleteSequence = useMutation({
     mutationFn: async (id) => {
@@ -75,20 +91,27 @@ function SequenceListPage() {
     }
   ];
 
+
   return (
     <>
       <Card variant="outlined">
         <CardHeader title="Sequences" action={<Button variant="contained" color="primary" onClick={showAddDialog} disableElevation>Add Sequence</Button>} />
         <CardContent>
-            <DataGrid
-              rows={sequences}
-              columns={columns}
-              initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-              pageSizeOptions={[5, 10]}
-              checkboxSelection
-              getRowId={(row) => row.id}
-              sx={{ border: 0 }}
-            />
+          <DataGrid
+            rows={data}
+            columns={columns}
+            pageSizeOptions={[5, 10]}
+            checkboxSelection
+            getRowId={(row) => row.id}
+            rowCount={-1}
+            sx={{ border: 0 }}
+            paginationMode="server"
+            paginationModel={paginationModel}
+            onPaginationModelChange={(paginationModel) => {
+              console.log(paginationModel)
+              setPaginationModel(paginationModel)}
+            }
+          />
         </CardContent>
       </Card>
       <AddDialog open={addDialogVisible} handleClose={() => setAddDialogVisible(false)} />
@@ -97,11 +120,6 @@ function SequenceListPage() {
 }
 
 export const Route = createFileRoute('/sequences/')({
-  loader: async () => {
-    const response = await fetch('http://localhost:3000/sequences')
-    const result: Sequence[] = await response.json();
-    return { sequences: result };
-  },
   component: SequenceListPage,
   pendingComponent: () => <IndeterminateProgress />
 })
