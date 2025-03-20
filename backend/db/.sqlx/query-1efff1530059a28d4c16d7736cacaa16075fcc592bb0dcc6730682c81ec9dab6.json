@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, identifier, alphabet as \"alphabet: Alphabet\", description, sequence, created_at FROM sequences",
+  "query": "SELECT id, identifier, alphabet as \"alphabet: Alphabet\", description, sequence, created_at FROM sequences ORDER BY id LIMIT $1 OFFSET $2",
   "describe": {
     "columns": [
       {
@@ -46,7 +46,10 @@
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Int8",
+        "Int8"
+      ]
     },
     "nullable": [
       false,
@@ -57,5 +60,5 @@
       false
     ]
   },
-  "hash": "507e9e7c6c6cf469cad1a3b18e9d3f1568238bbbb5a886b280b64f38d8602591"
+  "hash": "1efff1530059a28d4c16d7736cacaa16075fcc592bb0dcc6730682c81ec9dab6"
 }
