@@ -37,7 +37,7 @@ function SequenceListPage() {
     [paginationModel],
   );
 
-  const { data } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ['fetch-sequences', paginationModel],
     queryFn: async () => {
       const response = await fetch(`http://localhost:3000/sequences?page=${queryOptions.page}&per_page=${queryOptions.pageSize}`)
@@ -105,6 +105,7 @@ function SequenceListPage() {
             pageSizeOptions={[5, 10]}
             checkboxSelection
             getRowId={(row) => row.id}
+            loading={isLoading}
             rowCount={-1}
             sx={{ border: 0 }}
             paginationMode="server"

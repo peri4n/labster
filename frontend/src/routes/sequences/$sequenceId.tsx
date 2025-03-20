@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, CardHeader, Typography } from "@mui/material";
-import { DNAVisualizer } from "../../components/dna-visualizer";
+import { DNAVisualizer } from "@components/dna-visualizer";
 import { createFileRoute } from "@tanstack/react-router";
 import type { Sequence } from "@models/sequence";
 

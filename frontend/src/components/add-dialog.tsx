@@ -1,10 +1,10 @@
 import { Controller, useForm, type SubmitHandler } from "react-hook-form"
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, MenuItem, Select, TextField } from "@mui/material";
-import type { Alphabet } from "../models/sequence";
+import type { Alphabet } from "@models/sequence";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { useSnackbar } from "../util/snackbar-provider";
+import { useSnackbar } from "@util/snackbar-provider";
 
 interface AddDialogProps {
   open: boolean;
