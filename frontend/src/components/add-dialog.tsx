@@ -54,70 +54,68 @@ function AddDialog({ open, handleClose }: AddDialogProps) {
   }
 
   return (
-    <div>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title"
-        maxWidth="lg"
-        fullWidth>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate autoComplete="true">
-          <DialogTitle id="form-dialog-title" variant="h4" color="primary">Create new sequence</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Please fill in the form below to create a new sequence.
-            </DialogContentText>
-            <div className="flex flex-col">
-              <div className="flex flex-row">
-                <TextField
-                  sx={{ my: 2, flexGrow: 1 }}
-                  autoFocus
-                  label="Identifier"
-                  type="text"
-                  {...register("identifier", { required: true })}
-                />
-                <Controller
-                  name="alphabet"
-                  control={control}
-                  render={({ field }) => (
-                    <Select {...field} sx={{ my: 2, ml: 2 }}>
-                      <MenuItem value={'dna'} selected>DNA</MenuItem>
-                      <MenuItem value={'rna'}>RNA</MenuItem>
-                      <MenuItem value={'protein'}>Protein</MenuItem>
-                    </Select>
-                  )}
-                />
-              </div>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="form-dialog-title"
+      maxWidth="lg"
+      fullWidth>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate autoComplete="true">
+        <DialogTitle id="form-dialog-title" variant="h4" color="primary">Create new sequence</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please fill in the form below to create a new sequence.
+          </DialogContentText>
+          <div className="flex flex-col">
+            <div className="flex flex-row">
               <TextField
-                sx={{ mb: 2 }}
-                label="Description"
+                sx={{ my: 2, flexGrow: 1 }}
+                autoFocus
+                label="Identifier"
                 type="text"
-                fullWidth
-                {...register("description")}
+                {...register("identifier", { required: true })}
               />
-              <TextField
-                sx={{ mb: 2 }}
-                label="Sequence (e.g. ACGTAGACA)"
-                type="text"
-                required
-                multiline
-                rows={4}
-                fullWidth
-                {...register("sequence", { required: true })}
+              <Controller
+                name="alphabet"
+                control={control}
+                render={({ field }) => (
+                  <Select {...field} sx={{ my: 2, ml: 2 }}>
+                    <MenuItem value={'dna'} selected>DNA</MenuItem>
+                    <MenuItem value={'rna'}>RNA</MenuItem>
+                    <MenuItem value={'protein'}>Protein</MenuItem>
+                  </Select>
+                )}
               />
             </div>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              Cancel
-            </Button>
-            <Button type="submit" color="primary">
-              Add
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
-    </div>
+            <TextField
+              sx={{ mb: 2 }}
+              label="Description"
+              type="text"
+              fullWidth
+              {...register("description")}
+            />
+            <TextField
+              sx={{ mb: 2 }}
+              label="Sequence (e.g. ACGTAGACA)"
+              type="text"
+              required
+              multiline
+              rows={4}
+              fullWidth
+              {...register("sequence", { required: true })}
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button type="submit" color="primary">
+            Add
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 }
 

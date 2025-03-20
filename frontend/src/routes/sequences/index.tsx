@@ -7,7 +7,7 @@ import { DeleteOutline, Search } from '@mui/icons-material';
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import IndeterminateProgress from '@components/indeterminate-progress';
-
+import ActionsSpeedDial from '@components/action-speed-dial';
 
 function renderAplhabetCell(alphabet: string) {
   switch (alphabet) {
@@ -32,16 +32,19 @@ function SequenceListPage() {
     pageSize: 5,
   });
 
-  const { isPending, isError, data, error } = useQuery({
+  const queryOptions = useMemo(
+    () => ({ ...paginationModel }),
+    [paginationModel],
+  );
+
+  const { data } = useQuery({
     queryKey: ['fetch-sequences', paginationModel],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:3000/sequences?page=${paginationModel.page}&per_page=${paginationModel.pageSize}`)
+      const response = await fetch(`http://localhost:3000/sequences?page=${queryOptions.page}&per_page=${queryOptions.pageSize}`)
       const result: Sequence[] = await response.json();
       return result
     },
   })
-
-  console.log(data)
 
   const deleteSequence = useMutation({
     mutationFn: async (id) => {
@@ -91,7 +94,6 @@ function SequenceListPage() {
     }
   ];
 
-
   return (
     <>
       <Card variant="outlined">
@@ -107,13 +109,11 @@ function SequenceListPage() {
             sx={{ border: 0 }}
             paginationMode="server"
             paginationModel={paginationModel}
-            onPaginationModelChange={(paginationModel) => {
-              console.log(paginationModel)
-              setPaginationModel(paginationModel)}
-            }
+            onPaginationModelChange={setPaginationModel}
           />
         </CardContent>
       </Card>
+      <ActionsSpeedDial />
       <AddDialog open={addDialogVisible} handleClose={() => setAddDialogVisible(false)} />
     </>
   )
