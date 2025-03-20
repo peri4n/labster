@@ -3,7 +3,7 @@ use axum::{
     routing::{delete, get, post},
     Router,
 };
-use tower_http::cors::CorsLayer;
+use tower_http::{compression::CompressionLayer, cors::CorsLayer};
 
 use std::sync::Arc;
 
@@ -18,5 +18,6 @@ pub fn init_routes(app_state: AppState) -> Router {
         .route("/sequences/:id", delete(controllers::sequences::delete))
         .route("/sequences/:id", get(controllers::sequences::read_one))
         .layer(CorsLayer::permissive())
+        .layer(CompressionLayer::new().gzip(true))
         .with_state(shared_app_state)
 }
