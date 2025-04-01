@@ -18,7 +18,7 @@ type AddSequenceInput = {
   alphabet: Alphabet;
 }
 
-function AddDialog({ open, handleClose }: AddDialogProps) {
+function DeleteSequenceDialog({ open, handleClose }: AddDialogProps) {
   const { control, register, handleSubmit } = useForm<AddSequenceInput>({
     defaultValues: {
       identifier: '',
@@ -119,4 +119,4 @@ function AddDialog({ open, handleClose }: AddDialogProps) {
   );
 }
 
-export default AddDialog;
+export default AddSequenceDialog;

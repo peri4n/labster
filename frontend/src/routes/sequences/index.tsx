@@ -1,13 +1,13 @@
 import { DataGrid, GridActionsCellItem, type GridColDef } from '@mui/x-data-grid';
-import { Button, Card, CardContent, CardHeader, Chip } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { Card, CardContent, CardHeader, Chip } from '@mui/material'
+import { useState } from 'react'
 import type { Sequence } from "@models/sequence";
-import AddDialog from '@components/add-dialog';
 import { DeleteOutline, Search } from '@mui/icons-material';
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import IndeterminateProgress from '@components/indeterminate-progress';
 import ActionsSpeedDial from '@components/action-speed-dial';
+import ConfirmationDialog from '@components/confirmation-dialog';
 
 function renderAplhabetCell(alphabet: string) {
   switch (alphabet) {
@@ -18,29 +18,21 @@ function renderAplhabetCell(alphabet: string) {
 }
 
 function SequenceListPage() {
-  let [addDialogVisible, setAddDialogVisible] = useState(false);
-
   let navigate = useNavigate();
-  let router = useRouter();
+  let queryClient = useQueryClient();
 
-  function showAddDialog() {
-    setAddDialogVisible(true)
-  }
+  let [confirmationDialogVisible, setConfirmationDialogVisible] = useState(false);
+  let [clickedRow, setClickedRow] = useState(null);
 
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 5,
   });
 
-  const queryOptions = useMemo(
-    () => ({ ...paginationModel }),
-    [paginationModel],
-  );
-
   const { isLoading, data } = useQuery({
     queryKey: ['fetch-sequences', paginationModel],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:3000/sequences?page=${queryOptions.page}&per_page=${queryOptions.pageSize}`)
+      const response = await fetch(`http://localhost:3000/sequences?page=${paginationModel.page}&per_page=${paginationModel.pageSize}`)
       const result: Sequence[] = await response.json();
       return result
     },
@@ -56,15 +48,25 @@ function SequenceListPage() {
       });
     },
     onSuccess: () => {
-      router.invalidate({ filter: (match) => match.routeId === '/sequences/' });
+      queryClient.invalidateQueries({
+        queryKey: ['fetch-sequences']
+      })
     }
   })
+
+  function handleDeleteSequence() {
+    if (clickedRow) {
+      setConfirmationDialogVisible(false)
+      setClickedRow(null)
+      deleteSequence.mutate(clickedRow)
+    }
+  }
 
   const columns: GridColDef[] = [
     { field: 'identifier', headerName: 'Identifier', width: 130 },
     { field: 'alphabet', headerName: 'Alphabet', width: 100, renderCell: (params) => renderAplhabetCell(params.value) },
     { field: 'description', headerName: 'Description', width: 200 },
-    { field: 'sequence', headerName: 'Sequence', flex: 1 },
+    { field: 'sequence', headerName: 'Sequence', flex: 1, filterable: false },
     { field: 'length', headerName: 'Length', width: 100, valueGetter: (_, row: Sequence) => row.sequence.length },
     { field: 'created_at', headerName: 'Created at', width: 200, renderCell: (params) => new Date(params.value).toLocaleString() },
     {
@@ -85,7 +87,10 @@ function SequenceListPage() {
           <GridActionsCellItem
             icon={<DeleteOutline />}
             label="Delete"
-            onClick={() => deleteSequence.mutate(row.id)}
+            onClick={() => {
+              setConfirmationDialogVisible(true)
+              setClickedRow(row.id)
+            }}
             color="inherit"
             disableRipple
           />,
@@ -97,7 +102,7 @@ function SequenceListPage() {
   return (
     <>
       <Card variant="outlined">
-        <CardHeader title="Sequences" action={<Button variant="contained" color="primary" onClick={showAddDialog} disableElevation>Add Sequence</Button>} />
+        <CardHeader title="Sequences" action={<ActionsSpeedDial />} sx={{ pr: 3 }} />
         <CardContent>
           <DataGrid
             rows={data}
@@ -114,8 +119,7 @@ function SequenceListPage() {
           />
         </CardContent>
       </Card>
-      <ActionsSpeedDial />
-      <AddDialog open={addDialogVisible} handleClose={() => setAddDialogVisible(false)} />
+      <ConfirmationDialog open={confirmationDialogVisible} title={"Delete"} question={"Are you sure you want to delete the sequence?"} onConfirm={handleDeleteSequence} onClose={() => setConfirmationDialogVisible(false)} />
     </>
   )
 }

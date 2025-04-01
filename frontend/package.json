@@ -20,13 +20,14 @@
     "isbot": "^5.1.17",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.54.2"
   },
   "devDependencies": {
     "@react-router/dev": "^7.3.0",
     "@tailwindcss/vite": "^4.0.9",
-    "@tanstack/react-router-devtools": "^1.114.25",
     "@tanstack/react-query-devtools": "^5.69.0",
+    "@tanstack/react-router-devtools": "^1.114.25",
     "@tanstack/router-plugin": "^1.114.25",
     "@types/node": "^20",
     "@types/react": "^19.0.1",
