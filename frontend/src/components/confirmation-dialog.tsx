@@ -10,16 +10,16 @@ type ConfirmationDialogProps = {
 
 function ConfirmationDialog({ open, onClose, onConfirm, title, question }: ConfirmationDialogProps) {
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{title}</DialogTitle>
+    <Dialog open={open} onClose={onClose} hideBackdrop>
+      <DialogTitle sx={{ variant: "h2" }}>{title}</DialogTitle>
       <DialogContent>
         <DialogContentText>{question}</DialogContentText>
-      </DialogContent>
+      </DialogContent >
       <DialogActions>
         <Button onClick={onClose} color="primary">
           Cancel
         </Button>
-        <Button onClick={onConfirm} color="primary">
+        <Button autoFocus onClick={onConfirm} color="primary">
           Confirm
         </Button>
       </DialogActions>

@@ -28,6 +28,8 @@ function AddSequenceDialog({ open, handleClose }: AddDialogProps) {
     }
   });
 
+  console.log("Rendering AddSequenceDialog");
+
   const router = useRouter();
 
   const { showSnackbar } = useSnackbar();
@@ -59,6 +61,7 @@ function AddSequenceDialog({ open, handleClose }: AddDialogProps) {
       onClose={handleClose}
       aria-labelledby="form-dialog-title"
       maxWidth="lg"
+      hideBackdrop
       fullWidth>
       <form onSubmit={handleSubmit(onSubmit)} noValidate autoComplete="true">
         <DialogTitle id="form-dialog-title" variant="h4" color="primary">Create new sequence</DialogTitle>

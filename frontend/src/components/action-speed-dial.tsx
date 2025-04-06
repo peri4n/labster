@@ -9,6 +9,8 @@ export default function ActionsSpeedDial() {
   let [showAddSequenceDialog, setShowSequenceDialog] = useState(false);
   let [showFileUploadDialog, setShowFileUploadDialog] = useState(false);
 
+  console.log("Rendering ActionsSpeedDial");
+
   const actions = [
     { icon: <Upload />, name: 'Upload file', onClick: () => setShowFileUploadDialog(true) },
     { icon: <Add />, name: 'Add sequence', onClick: () => setShowSequenceDialog(true) },

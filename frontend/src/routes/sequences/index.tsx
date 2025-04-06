@@ -24,6 +24,8 @@ function SequenceListPage() {
   let [confirmationDialogVisible, setConfirmationDialogVisible] = useState(false);
   let [clickedRow, setClickedRow] = useState(null);
 
+  console.log("Rendering SequenceListPage");
+
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 5,
