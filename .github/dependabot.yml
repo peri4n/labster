@@ -1,0 +1,87 @@
+version: 2
+updates:
+  # Backend Rust dependencies
+  - package-ecosystem: "cargo"
+    directory: "/backend/cli"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "fbull"
+    labels:
+      - "dependencies"
+      - "rust"
+      - "backend"
+
+  - package-ecosystem: "cargo"
+    directory: "/backend/config"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "fbull"
+    labels:
+      - "dependencies"
+      - "rust"
+      - "backend"
+
+  - package-ecosystem: "cargo"
+    directory: "/backend/db"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "fbull"
+    labels:
+      - "dependencies"
+      - "rust"
+      - "backend"
+
+  - package-ecosystem: "cargo"
+    directory: "/backend/macros"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "fbull"
+    labels:
+      - "dependencies"
+      - "rust"
+      - "backend"
+
+  - package-ecosystem: "cargo"
+    directory: "/backend/web"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "fbull"
+    labels:
+      - "dependencies"
+      - "rust"
+      - "backend"
+
+  # Frontend npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "fbull"
+    labels:
+      - "dependencies"
+      - "javascript"
+      - "frontend"
