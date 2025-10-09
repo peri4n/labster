@@ -32,7 +32,7 @@ labster-macros = { path = "../macros", optional = true }
 chrono = { version = "0.4.40", features = ["serde"] }
 
 [dev-dependencies]
-fake = "3.0"
+fake = "4.4"
 googletest = "0.14"
 labster-db = { path = "../db", features = ["test-helpers"] }
 labster-web = { path = ".", features = ["test-helpers"] }
