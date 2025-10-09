@@ -13,7 +13,7 @@ test-helpers = ["dep:serde_json", "dep:tower", "dep:hyper", "dep:labster-macros"
 
 [dependencies]
 anyhow = "1.0"
-axum = { version = "0.7", features = ["macros"] }
+axum = { version = "0.8", features = ["macros"] }
 labster-config = { path = "../config" }
 labster-db = { path = "../db" }
 serde = { version = "1.0", features = ["derive"] }
