@@ -27,7 +27,7 @@ serde_json = { version = "1.0", optional = true }
 thiserror = "2.0"
 tower = { version = "0.5", features = ["util"], optional = true }
 hyper = { version = "1.0", features = ["full"], optional = true }
-validator = "0.19"
+validator = "0.20"
 labster-macros = { path = "../macros", optional = true }
 chrono = { version = "0.4.40", features = ["serde"] }
 
