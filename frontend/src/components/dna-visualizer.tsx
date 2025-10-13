@@ -69,20 +69,19 @@ export function DNAVisualizer({ sequence, alphabet = 'dna' }: DNAVisualizerProps
   let svgElements: JSX.Element[] = [];
   let line = 0;
 
-  // Add position indicators
+  // Add position indicators above nucleotides every 10 positions
   const addPositionIndicators = () => {
     const indicators: JSX.Element[] = [];
-    for (let i = 0; i < sequence.length; i += 10) {
-      if (i % lineBreak === 0 && i !== 0) continue; // Skip line breaks
-      
+    for (let i = 9; i < sequence.length; i += 10) { // Start at position 10 (index 9)
       const x = (i % lineBreak) * (nucleotideWidth + spacing);
-      const y = Math.floor(i / lineBreak) * (nucleotideHeight + spacing + 20);
+      const lineNumber = Math.floor(i / lineBreak);
+      const y = lineNumber * (nucleotideHeight + spacing + 20) + 15;
       
       indicators.push(
         <text
           key={`pos-${i}`}
           x={x + nucleotideWidth / 2}
-          y={y - 5}
+          y={y}
           fontSize={10}
           textAnchor="middle"
           fill="#666"
@@ -96,9 +95,9 @@ export function DNAVisualizer({ sequence, alphabet = 'dna' }: DNAVisualizerProps
 
   // Generate nucleotide elements
   for (let i = 0; i < sequence.length; i++) {
-    let x = (i % lineBreak) * (nucleotideWidth + spacing);
-    let y = line * (nucleotideHeight + spacing + (showIndexes ? 20 : 0));
     if (i % lineBreak === 0 && i !== 0) line++;
+    let x = (i % lineBreak) * (nucleotideWidth + spacing);
+    let y = line * (nucleotideHeight + spacing + (showIndexes ? 20 : 0)) + (showIndexes ? 20 : 0);
 
     let nucleotide = sequence[i].toUpperCase();
     let color = colors[nucleotide] || "#E5E5E5";
@@ -106,16 +105,6 @@ export function DNAVisualizer({ sequence, alphabet = 'dna' }: DNAVisualizerProps
     // Add subtle shadow and better styling
     svgElements.push(
       <g key={i}>
-        {/* Shadow */}
-        <rect 
-          x={x + 2} 
-          y={y + 2} 
-          width={nucleotideWidth} 
-          height={nucleotideHeight}
-          rx={4} 
-          ry={4} 
-          fill="rgba(0,0,0,0.1)" 
-        />
         {/* Main rectangle */}
         <rect 
           x={x} 
@@ -127,9 +116,6 @@ export function DNAVisualizer({ sequence, alphabet = 'dna' }: DNAVisualizerProps
           fill={color} 
           stroke="rgba(0,0,0,0.2)" 
           strokeWidth={0.5}
-          style={{
-            filter: 'drop-shadow(0px 1px 2px rgba(0,0,0,0.1))'
-          }}
         />
         {/* Text */}
         <text 
@@ -143,24 +129,12 @@ export function DNAVisualizer({ sequence, alphabet = 'dna' }: DNAVisualizerProps
         >
           {nucleotide}
         </text>
-        {/* Position indicator on hover */}
-        {showIndexes && (i + 1) % 5 === 0 && (
-          <text
-            x={x + nucleotideWidth / 2}
-            y={y + nucleotideHeight + 12}
-            fontSize={8}
-            textAnchor="middle"
-            fill="#999"
-          >
-            {i + 1}
-          </text>
-        )}
       </g>
     );
   }
 
   let svgWidth = containerWidth;
-  let svgHeight = (line + 1) * (nucleotideHeight + spacing + (showIndexes ? 20 : 0)) + (showIndexes ? 20 : 0);
+  let svgHeight = (line + 1) * (nucleotideHeight + spacing + (showIndexes ? 20 : 0)) + (showIndexes ? 35 : 0);
 
   // Create legend for color scheme
   const createLegend = () => {
