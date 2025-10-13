@@ -71,34 +71,34 @@ export function SequenceDetailsPage() {
           <CardContent>
             {/* Basic Information Row */}
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, mb: 3 }}>
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                  ID
+              <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  ID:
                 </Typography>
                 <Typography variant="body1" fontWeight="medium">
                   {id}
                 </Typography>
               </Box>
               
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                  Type
+              <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Type:
                 </Typography>
                 {getAlphabetChip(alphabet)}
               </Box>
               
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                  Created
+              <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Created:
                 </Typography>
                 <Typography variant="body1">
                   {new Date(created_at).toLocaleDateString()}
                 </Typography>
               </Box>
               
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                  Length
+              <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Length:
                 </Typography>
                 <Typography variant="h6" color="primary.main">
                   {length.toLocaleString()} {alphabet.toLowerCase() === 'protein' ? 'amino acids' : 'nucleotides'}
@@ -107,11 +107,11 @@ export function SequenceDetailsPage() {
             </Box>
 
             {/* Description Section */}
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                Description
+            <Box sx={{ mb: 3, display: 'flex', gap: 1 }}>
+              <Typography variant="subtitle2" color="text.secondary">
+                Description:
               </Typography>
-              <Typography variant="body1" sx={{ minHeight: '1.5em' }}>
+              <Typography variant="body1" sx={{ minHeight: '1.5em', flex: 1 }}>
                 {description || 'No description provided'}
               </Typography>
             </Box>
