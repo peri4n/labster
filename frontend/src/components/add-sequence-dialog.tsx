@@ -1,6 +1,7 @@
 import { Controller, useForm, type SubmitHandler } from "react-hook-form"
 
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, MenuItem, Select, TextField, FormControl, InputLabel, Stack, Chip, Box, CircularProgress } from "@mui/material";
+import { Button, DialogContentText, MenuItem, Select, TextField, FormControl, InputLabel, Stack, Chip, Box, CircularProgress } from "@mui/material";
+import BaseDialog from "./base-dialog";
 import type { Alphabet } from "@models/sequence";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
@@ -71,114 +72,13 @@ function AddSequenceDialog({ open, handleClose }: AddDialogProps) {
   }
 
   return (
-    <Dialog
+    <BaseDialog
       open={open}
       onClose={handleClose}
-      aria-labelledby="form-dialog-title"
+      title="Create New Sequence"
       maxWidth="md"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: 2,
-          boxShadow: (theme) => theme.shadows[12]
-        }
-      }}
-    >
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <DialogTitle 
-          id="form-dialog-title" 
-          sx={{ 
-            pb: 1,
-            bgcolor: 'primary.main',
-            color: 'primary.contrastText',
-            fontWeight: 600
-          }}
-        >
-          Create New Sequence
-        </DialogTitle>
-        
-        <DialogContent sx={{ mt: 3 }}>
-          <DialogContentText sx={{ mb: 3 }}>
-            Fill in the details below to add a new biological sequence to your collection.
-          </DialogContentText>
-          
-          <Stack spacing={3}>
-            <Stack direction="row" spacing={2}>
-              <TextField
-                autoFocus
-                label="Identifier"
-                fullWidth
-                error={!!errors.identifier}
-                helperText={errors.identifier ? "Identifier is required" : ""}
-                {...register("identifier", { required: "Identifier is required" })}
-                sx={{ flex: 2 }}
-              />
-              
-              <Controller
-                name="alphabet"
-                control={control}
-                render={({ field }) => (
-                  <FormControl sx={{ flex: 1 }}>
-                    <InputLabel>Type</InputLabel>
-                    <Select 
-                      {...field} 
-                      label="Type"
-                      renderValue={(value) => getAlphabetChip(value as Alphabet)}
-                    >
-                      <MenuItem value="dna">
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          {getAlphabetChip('dna')}
-                          <span>Deoxyribonucleic Acid</span>
-                        </Box>
-                      </MenuItem>
-                      <MenuItem value="rna">
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          {getAlphabetChip('rna')}
-                          <span>Ribonucleic Acid</span>
-                        </Box>
-                      </MenuItem>
-                      <MenuItem value="protein">
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          {getAlphabetChip('protein')}
-                          <span>Protein Sequence</span>
-                        </Box>
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                )}
-              />
-            </Stack>
-            
-            <TextField
-              label="Description"
-              fullWidth
-              multiline
-              rows={2}
-              placeholder="Describe the sequence (optional)"
-              {...register("description")}
-            />
-            
-            <TextField
-              label="Sequence"
-              multiline
-              rows={6}
-              fullWidth
-              required
-              error={!!errors.sequence}
-              helperText={errors.sequence ? "Sequence is required" : "Enter the biological sequence (e.g., ATGCGATCG)"}
-              placeholder="ATGCGATCGAATTC..."
-              {...register("sequence", { required: "Sequence is required" })}
-              sx={{
-                '& .MuiInputBase-root': {
-                  fontFamily: 'monospace',
-                  fontSize: '0.9rem'
-                }
-              }}
-            />
-          </Stack>
-        </DialogContent>
-        
-        <DialogActions sx={{ p: 3, pt: 2, gap: 1 }}>
+      actions={
+        <>
           <Button 
             onClick={handleClose} 
             color="inherit"
@@ -195,9 +95,90 @@ function AddSequenceDialog({ open, handleClose }: AddDialogProps) {
           >
             {addSequence.isPending ? 'Adding...' : 'Add Sequence'}
           </Button>
-        </DialogActions>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <DialogContentText sx={{ mb: 3 }}>
+          Fill in the details below to add a new biological sequence to your collection.
+        </DialogContentText>
+        
+        <Stack spacing={3}>
+          <Stack direction="row" spacing={2}>
+            <TextField
+              autoFocus
+              label="Identifier"
+              fullWidth
+              error={!!errors.identifier}
+              helperText={errors.identifier ? "Identifier is required" : ""}
+              {...register("identifier", { required: "Identifier is required" })}
+              sx={{ flex: 2 }}
+            />
+            
+            <Controller
+              name="alphabet"
+              control={control}
+              render={({ field }) => (
+                <FormControl sx={{ flex: 1 }}>
+                  <InputLabel>Type</InputLabel>
+                  <Select 
+                    {...field} 
+                    label="Type"
+                    renderValue={(value) => getAlphabetChip(value as Alphabet)}
+                  >
+                    <MenuItem value="dna">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {getAlphabetChip('dna')}
+                        <span>Deoxyribonucleic Acid</span>
+                      </Box>
+                    </MenuItem>
+                    <MenuItem value="rna">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {getAlphabetChip('rna')}
+                        <span>Ribonucleic Acid</span>
+                      </Box>
+                    </MenuItem>
+                    <MenuItem value="protein">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {getAlphabetChip('protein')}
+                        <span>Protein Sequence</span>
+                      </Box>
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+            />
+          </Stack>
+          
+          <TextField
+            label="Description"
+            fullWidth
+            multiline
+            rows={2}
+            placeholder="Describe the sequence (optional)"
+            {...register("description")}
+          />
+          
+          <TextField
+            label="Sequence"
+            multiline
+            rows={6}
+            fullWidth
+            required
+            error={!!errors.sequence}
+            helperText={errors.sequence ? "Sequence is required" : "Enter the biological sequence (e.g., ATGCGATCG)"}
+            placeholder="ATGCGATCGAATTC..."
+            {...register("sequence", { required: "Sequence is required" })}
+            sx={{
+              '& .MuiInputBase-root': {
+                fontFamily: 'monospace',
+                fontSize: '0.9rem'
+              }
+            }}
+          />
+        </Stack>
       </form>
-    </Dialog>
+    </BaseDialog>
   );
 }
 

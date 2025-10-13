@@ -1,4 +1,5 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { Button, DialogContentText } from "@mui/material";
+import BaseDialog from "./base-dialog";
 
 type ConfirmationDialogProps = {
   open: boolean,
@@ -9,56 +10,38 @@ type ConfirmationDialogProps = {
 }
 
 function ConfirmationDialog({ open, onClose, onConfirm, title, question }: ConfirmationDialogProps) {
+  const actions = (
+    <>
+      <Button
+        onClick={onClose}
+        color="inherit"
+        disableRipple
+      >
+        Cancel
+      </Button>
+      <Button
+        onClick={onConfirm}
+        variant="contained"
+        autoFocus
+        disableRipple
+      >
+        Delete
+      </Button>
+    </>
+  );
+
   return (
-    <Dialog
+    <BaseDialog
       open={open}
       onClose={onClose}
+      title={title}
       maxWidth="sm"
-      fullWidth
-      slotProps={{
-        paper: {
-          sx: {
-            borderRadius: 2,
-            boxShadow: (theme) => theme.shadows[12]
-          }
-        }
-      }}
+      actions={actions}
     >
-      <DialogTitle
-        sx={{
-          pb: 1,
-          bgcolor: 'primary.main',
-          color: 'primary.contrastText',
-          fontWeight: 600
-        }}
-      >
-        {title}
-      </DialogTitle>
-
-      <DialogContent sx={{ mt: 3 }}>
-        <DialogContentText>
-          {question}
-        </DialogContentText>
-      </DialogContent>
-
-      <DialogActions sx={{ p: 3, pt: 2, gap: 1 }}>
-        <Button
-          onClick={onClose}
-          color="inherit"
-          disableRipple
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={onConfirm}
-          variant="contained"
-          autoFocus
-          disableRipple
-        >
-          Delete
-        </Button>
-      </DialogActions>
-    </Dialog>
+      <DialogContentText>
+        {question}
+      </DialogContentText>
+    </BaseDialog>
   );
 }
 
