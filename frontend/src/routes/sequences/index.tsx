@@ -1,10 +1,9 @@
 import { Card, CardContent, CardHeader, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Checkbox, TablePagination, Skeleton } from '@mui/material'
 import { useState } from 'react'
 import type { Sequence } from "@models/sequence";
-import { DeleteOutline, Search } from '@mui/icons-material';
+import { DeleteOutline } from '@mui/icons-material';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import IndeterminateProgress from '@components/indeterminate-progress';
 import ActionsSpeedDial from '@components/action-speed-dial';
 import ConfirmationDialog from '@components/confirmation-dialog';
 
@@ -48,7 +47,7 @@ function SequenceListPage() {
 
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
-    pageSize: 5,
+    pageSize: 20,
   });
 
   const { isLoading, data } = useQuery({
@@ -201,7 +200,7 @@ function SequenceListPage() {
             onPageChange={(_, newPage) => setPaginationModel(prev => ({ ...prev, page: newPage }))}
             rowsPerPage={paginationModel.pageSize}
             onRowsPerPageChange={(event) => setPaginationModel(prev => ({ ...prev, pageSize: parseInt(event.target.value, 10), page: 0 }))}
-            rowsPerPageOptions={[5, 10]}
+            rowsPerPageOptions={[10, 20, 50]}
           />
         </CardContent>
       </Card>
