@@ -1,7 +1,9 @@
-import { Box, Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
+import { Box, Dialog, DialogContent, DialogTitle, Typography, DialogActions, Button, CircularProgress, Stack, Alert, Chip } from '@mui/material';
+import { CloudUpload, Description } from '@mui/icons-material';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { useSnackbar } from '@util/snackbar-provider';
 
 interface FileUploadProps {
   open: boolean;
@@ -9,59 +11,192 @@ interface FileUploadProps {
 }
 
 function FileUploadDialog({ open, handleClose }: FileUploadProps) {
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [parsedSequences, setParsedSequences] = useState<Array<{ identifier: string, sequence: string }>>([]);
+  const queryClient = useQueryClient();
+  const { showSnackbar } = useSnackbar();
+
   const uploadSequences = useMutation({
-    mutationFn: async (sequences: Array<{ identifier: string, sequence: string }>) => {
-      let promises = [];
-      for (const sequence of sequences) {
-        promises.push(fetch('http://localhost:3000/sequences', {
+    mutationFn: async (sequences: Array<{ identifier: string, sequence: string, description?: string, alphabet?: string }>) => {
+      const promises = sequences.map(sequence =>
+        fetch('http://localhost:3000/sequences', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(sequence)
-        }));
-      }
-      await Promise.all(promises)
+          body: JSON.stringify({
+            ...sequence,
+            description: sequence.description || '',
+            alphabet: sequence.alphabet || 'dna'
+          })
+        })
+      );
+      await Promise.all(promises);
     },
-    onSuccess: () => {
+    onSuccess: (_, sequences) => {
       queryClient.invalidateQueries({
         queryKey: ['fetch-sequences']
-      })
-
+      });
+      showSnackbar(`Successfully uploaded ${sequences.length} sequence(s)`, 'success');
+      handleCloseAndReset();
+    },
+    onError: (error: Error) => {
+      showSnackbar(error.message || 'Failed to upload sequences', 'error');
     }
   });
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    acceptedFiles.map(file => {
-      file.text().then(text => {
-        const entries = parseFasta(text)
-        uploadSequences.mutate(entries);
-      })
-    });
+  const handleCloseAndReset = () => {
+    setUploadedFiles([]);
+    setParsedSequences([]);
     handleClose();
-  }, [handleClose, uploadSequences]);
+  };
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
-  const queryClient = useQueryClient();
+  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
+    if (rejectedFiles.length > 0) {
+      showSnackbar('Some files were rejected. Please upload FASTA files only.', 'warning');
+    }
+
+    setUploadedFiles(acceptedFiles);
+
+    // Parse all files
+    Promise.all(
+      acceptedFiles.map(file =>
+        file.text().then(text => parseFasta(text))
+      )
+    ).then(results => {
+      const allSequences = results.flat();
+      setParsedSequences(allSequences);
+    }).catch(() => {
+      showSnackbar('Error parsing FASTA files', 'error');
+    });
+  }, [showSnackbar]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'text/plain': ['.fasta', '.fa', '.fas', '.txt'],
+      'application/octet-stream': ['.fasta', '.fa', '.fas']
+    },
+    maxFiles: 10
+  });
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth hideBackdrop>
-      <DialogTitle>Upload Sequence Files</DialogTitle>
-      <DialogContent>
-        <Box {...getRootProps({ className: 'dropzone' })}
-          sx={{
-            border: '2px dashed #ccc',
-            borderRadius: '16px',
-            padding: '40px',
-            textAlign: 'center',
-            minHeight: '200px',
-            cursor: 'pointer',
-            backgroundColor: '#f9f9f9'
-          }}>
-          <input {...getInputProps()} />
-          <Typography variant="body1">Drag 'n' drop some files here, or click to select files</Typography>
-        </Box>
+    <Dialog
+      open={open}
+      onClose={handleCloseAndReset}
+      maxWidth="md"
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: 2,
+            boxShadow: (theme) => theme.shadows[12]
+          }
+        }
+      }}
+    >
+      <DialogTitle
+        sx={{
+          pb: 1,
+          bgcolor: 'primary.main',
+          color: 'primary.contrastText',
+          fontWeight: 600
+        }}
+      >
+        Upload FASTA Files
+      </DialogTitle>
+
+      <DialogContent sx={{ mt: 3 }}>
+        <Stack spacing={3}>
+          <Typography variant="body2" color="text.secondary">
+            Upload FASTA files containing biological sequences. Supported formats: .fasta, .fa, .fas, .txt
+          </Typography>
+
+          <Box
+            {...getRootProps({ className: 'dropzone' })}
+            sx={{
+              border: (theme) => `2px dashed ${isDragActive ? theme.palette.primary.main : theme.palette.divider}`,
+              borderRadius: 2,
+              padding: 4,
+              textAlign: 'center',
+              minHeight: 200,
+              cursor: 'pointer',
+              backgroundColor: (theme) => isDragActive ? theme.palette.action.hover : theme.palette.background.paper,
+              transition: 'all 0.2s ease-in-out',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 2,
+              '&:hover': {
+                backgroundColor: (theme) => theme.palette.action.hover,
+                borderColor: (theme) => theme.palette.primary.main
+              }
+            }}
+          >
+            <input {...getInputProps()} />
+            <CloudUpload
+              sx={{
+                fontSize: 48,
+                color: (theme) => isDragActive ? theme.palette.primary.main : theme.palette.text.secondary
+              }}
+            />
+            <Typography variant="h6" color={isDragActive ? 'primary' : 'text.primary'}>
+              {isDragActive ? 'Drop files here' : 'Drag & drop FASTA files'}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              or click to browse files
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Maximum 10 files • .fasta, .fa, .fas, .txt
+            </Typography>
+          </Box>
+
+          {uploadedFiles.length > 0 && (
+            <Box>
+              <Typography variant="subtitle2" gutterBottom>
+                Uploaded Files ({uploadedFiles.length})
+              </Typography>
+              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                {uploadedFiles.map((file, index) => (
+                  <Chip
+                    key={index}
+                    icon={<Description />}
+                    label={file.name}
+                    variant="outlined"
+                    size="small"
+                  />
+                ))}
+              </Stack>
+            </Box>
+          )}
+
+          {parsedSequences.length > 0 && (
+            <Alert severity="info">
+              Found {parsedSequences.length} sequence(s) ready for upload
+            </Alert>
+          )}
+        </Stack>
       </DialogContent>
+
+      <DialogActions sx={{ p: 3, pt: 2, gap: 1 }}>
+        <Button
+          onClick={handleCloseAndReset}
+          color="inherit"
+          disabled={uploadSequences.isPending}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={() => uploadSequences.mutate(parsedSequences)}
+          variant="contained"
+          disabled={parsedSequences.length === 0 || uploadSequences.isPending}
+          startIcon={uploadSequences.isPending ? <CircularProgress size={16} /> : <CloudUpload />}
+          sx={{ minWidth: 120 }}
+        >
+          {uploadSequences.isPending ? 'Uploading...' : `Upload ${parsedSequences.length || ''} Sequence${parsedSequences.length !== 1 ? 's' : ''}`}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }
