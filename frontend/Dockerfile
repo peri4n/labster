@@ -21,9 +21,6 @@ FROM nginx:latest
 # Copy built React files to Nginx's default directory
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy a custom Nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
 # Expose port 3010
 EXPOSE 3010
 
