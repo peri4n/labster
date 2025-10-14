@@ -4,7 +4,7 @@ import type { Sequence } from "@models/sequence";
 import { DeleteOutline } from '@mui/icons-material';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import ActionsSpeedDial from '@components/action-speed-dial';
+import AddSequenceDropdown from '@components/add-sequence-dropdown';
 import ConfirmationDialog from '@components/confirmation-dialog';
 
 function renderAplhabetCell(alphabet: string) {
@@ -119,7 +119,7 @@ function SequenceListPage() {
   return (
     <>
       <Card variant="outlined">
-        <CardHeader title="Sequences" action={<ActionsSpeedDial />} sx={{ pr: 3 }} />
+        <CardHeader title="Sequences" action={<AddSequenceDropdown />} sx={{ pr: 3 }} />
         <CardContent>
           <TableContainer>
             <Table sx={{ border: 0 }}>
