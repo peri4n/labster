@@ -1,5 +1,6 @@
 import "./app.css";
-import { AppBar, Box, CssBaseline, Drawer, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, CssBaseline, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography, Divider } from "@mui/material";
+import { Home, Biotech, Collections } from "@mui/icons-material";
 
 import { Link, Outlet, createRootRoute } from '@tanstack/react-router'
 
@@ -8,6 +9,18 @@ export const Route = createRootRoute({
 })
 
 const drawerWidth = 180;
+
+const createMenuItem = (text: string, icon: React.ReactNode, to: string) =>
+  <Link to={to}>
+    <ListItem key={text} disablePadding>
+      <ListItemButton>
+        <ListItemIcon>
+          {icon}
+        </ListItemIcon>
+        <ListItemText primary={text} />
+      </ListItemButton>
+    </ListItem>
+  </Link>
 
 function RootComponent() {
   return (
@@ -25,33 +38,21 @@ function RootComponent() {
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+          [`& .MuiDrawer-paper`]: {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+            backgroundColor: '#f8f9fa',
+            borderRight: '1px solid #e9ecef'
+          },
         }}
       >
         <Toolbar />
-        <Box sx={{ overflow: 'auto' }}>
+        <Box sx={{ overflow: 'auto', pt: 1 }}>
           <List>
-            <Link to="/">
-              <ListItem key="Home" disablePadding>
-                <ListItemButton disableRipple>
-                  <ListItemText primary="Home" />
-                </ListItemButton>
-              </ListItem>
-            </Link>
-            <Link to="/sequences">
-              <ListItem key="Sequences" disablePadding>
-                <ListItemButton disableRipple>
-                  <ListItemText primary="Sequences" />
-                </ListItemButton>
-              </ListItem>
-            </Link>
-            <Link to="/collections">
-              <ListItem key="Collections" disablePadding>
-                <ListItemButton disableRipple>
-                  <ListItemText primary="Collections" />
-                </ListItemButton>
-              </ListItem>
-            </Link>
+            {createMenuItem("Home", <Home color="primary" />, "/")}
+            {createMenuItem("Sequences", <Biotech color="primary" />, "/sequences")}
+            <Divider sx={{ mx: 2, my: 1 }} />
+            {createMenuItem("Collections", <Collections color="primary" />, "/collections")}
           </List>
         </Box>
       </Drawer>
