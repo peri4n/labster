@@ -1,11 +1,10 @@
-use crate::{controllers, state::AppState};
+use crate::{controllers, state::{AppState, SharedAppState}};
 use axum::{
-    routing::{delete, get, post},
-    Router,
+    extract::{MatchedPath, Request, State}, middleware::Next, response::IntoResponse, routing::{delete, get, post}, Router
 };
 use tower_http::{compression::CompressionLayer, cors::CorsLayer};
 
-use std::sync::Arc;
+use std::{sync::Arc, time::Instant};
 
 /// Initializes the application's routes.
 ///
@@ -17,7 +16,42 @@ pub fn init_routes(app_state: AppState) -> Router {
         .route("/sequences", post(controllers::sequences::create))
         .route("/sequences/{id}", delete(controllers::sequences::delete))
         .route("/sequences/{id}", get(controllers::sequences::read_one))
+        .route("/metrics", get(render_metrics))
         .layer(CorsLayer::permissive())
         .layer(CompressionLayer::new().gzip(true))
+        .layer(axum::middleware::from_fn(track_metrics))
         .with_state(shared_app_state)
+}
+
+pub async fn render_metrics(
+    State(app_state): State<SharedAppState>) -> impl IntoResponse {
+    app_state.metrics_handle.render()
+}
+
+async fn track_metrics(req: Request, next: Next) -> impl IntoResponse {
+    let start = Instant::now();
+    let path = if let Some(matched_path) = req.extensions().get::<MatchedPath>() {
+        matched_path.as_str().to_owned()
+    } else {
+        req.uri().path().to_owned()
+    };
+    let method = req.method().clone();
+
+    let response = next.run(req).await;
+
+    let latency = start.elapsed().as_secs_f64();
+    let status = response.status().as_u16().to_string();
+
+    let labels = [
+        ("method", method.to_string()),
+        ("path", path),
+        ("status", status),
+    ];
+
+    let counter = metrics:: counter!("http_requests_total", &labels);
+    counter.increment(1);
+    let histogram = metrics::histogram!("http_requests_duration_seconds", &labels);
+    histogram.record(latency);
+
+    response
 }
