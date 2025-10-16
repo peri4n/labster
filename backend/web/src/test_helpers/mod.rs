@@ -12,6 +12,7 @@ use labster_db::{
     test_helpers::{setup_db, teardown_db},
     DbPool,
 };
+use metrics_exporter_prometheus::PrometheusBuilder;
 use std::cell::OnceCell;
 use tower::ServiceExt;
 
@@ -213,9 +214,11 @@ pub async fn setup() -> DbTestContext {
     let config = init_config.get_or_init(|| load_config(&Environment::Test).unwrap());
 
     let test_db_pool = setup_db(&config.database).await;
+    let metrics_handle = PrometheusBuilder::new().install_recorder().unwrap();
 
     let app = init_routes(AppState {
         db_pool: test_db_pool.clone(),
+        metrics_handle 
     });
 
     DbTestContext {

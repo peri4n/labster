@@ -1,8 +1,9 @@
 use crate::{controllers, state::{AppState, SharedAppState}};
 use axum::{
-    extract::{MatchedPath, Request, State}, middleware::Next, response::IntoResponse, routing::{delete, get, post}, Router
+    extract::{MatchedPath, Request, State}, middleware::Next, response::IntoResponse, routing::{delete, get, post}, Json, Router
 };
 use tower_http::{compression::CompressionLayer, cors::CorsLayer};
+use utoipa::OpenApi;
 
 use std::{sync::Arc, time::Instant};
 
@@ -17,10 +18,27 @@ pub fn init_routes(app_state: AppState) -> Router {
         .route("/sequences/{id}", delete(controllers::sequences::delete))
         .route("/sequences/{id}", get(controllers::sequences::read_one))
         .route("/metrics", get(render_metrics))
+        .route("/api-docs/openapi.json", get(openapi))
         .layer(CorsLayer::permissive())
         .layer(CompressionLayer::new().gzip(true))
         .layer(axum::middleware::from_fn(track_metrics))
         .with_state(shared_app_state)
+}
+
+#[derive(OpenApi)]
+#[openapi(paths(openapi))]
+struct ApiDoc;
+
+/// Return JSON version of an OpenAPI schema
+#[utoipa::path(
+    get,
+    path = "/api-docs/openapi.json",
+    responses(
+        (status = 200, description = "JSON file", body = ())
+    )
+)]
+async fn openapi() -> Json<utoipa::openapi::OpenApi> {
+    Json(ApiDoc::openapi())
 }
 
 pub async fn render_metrics(

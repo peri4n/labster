@@ -32,6 +32,7 @@ labster-macros = { path = "../macros", optional = true }
 chrono = { version = "0.4.40", features = ["serde"] }
 metrics-exporter-prometheus = { version = "0.17.2", features = ["http-listener"]}
 metrics = "0.24.2"
+utoipa = { version = "5.4.0", features = ["axum_extras", "macros"] }
 
 [dev-dependencies]
 fake = "4.4"
