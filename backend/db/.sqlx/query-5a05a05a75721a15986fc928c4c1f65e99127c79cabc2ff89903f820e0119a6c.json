@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "INSERT INTO sequences (identifier, alphabet, description, sequence) VALUES ($1, ($2::text)::alphabet, $3, $4) RETURNING id, created_at",
+  "query": "INSERT INTO sequences (identifier, description, sequence) VALUES ($1, $2, $3) RETURNING id, created_at",
   "describe": {
     "columns": [
       {
@@ -18,7 +18,6 @@
       "Left": [
         "Varchar",
         "Text",
-        "Text",
         "Text"
       ]
     },
@@ -27,5 +26,5 @@
       false
     ]
   },
-  "hash": "e82d842ce2ffc0b38fb7e351dc4100a61086065fce3f2c48d82a1f5df38f827e"
+  "hash": "5a05a05a75721a15986fc928c4c1f65e99127c79cabc2ff89903f820e0119a6c"
 }

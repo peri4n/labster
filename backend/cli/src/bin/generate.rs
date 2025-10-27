@@ -313,6 +313,8 @@ async fn generate_crud_controller(name: String) -> Result<String, anyhow::Error>
     let db_crate_name = to_snake_case(&db_crate_name);
     let macros_crate_name = get_member_package_name("macros")?;
     let macros_crate_name = to_snake_case(&macros_crate_name);
+    let web_crate_name = get_member_package_name("web")?;
+    let web_crate_name = to_snake_case(&web_crate_name);
 
     let template = get_liquid_template("controller/crud/controller.rs")?;
     let variables = liquid::object!({
@@ -320,7 +322,8 @@ async fn generate_crud_controller(name: String) -> Result<String, anyhow::Error>
         "entity_singular_name": name_singular,
         "entity_plural_name": name_plural,
         "db_crate_name": db_crate_name,
-        "macros_crate_name": macros_crate_name
+        "macros_crate_name": macros_crate_name,
+        "web_crate_name": web_crate_name
     });
     let output = template
         .render(&variables)
@@ -345,6 +348,8 @@ async fn generate_crud_controller_test(name: String) -> Result<String, anyhow::E
     let db_crate_name = to_snake_case(&db_crate_name);
     let macros_crate_name = get_member_package_name("macros")?;
     let macros_crate_name = to_snake_case(&macros_crate_name);
+    let web_crate_name = get_member_package_name("web")?;
+    let web_crate_name = to_snake_case(&web_crate_name);
 
     let template = get_liquid_template("controller/crud/test.rs")?;
     let variables = liquid::object!({
@@ -352,7 +357,8 @@ async fn generate_crud_controller_test(name: String) -> Result<String, anyhow::E
         "entity_singular_name": name_singular,
         "entity_plural_name": name_plural,
         "db_crate_name": db_crate_name,
-        "macros_crate_name": macros_crate_name
+        "macros_crate_name": macros_crate_name,
+        "web_crate_name": web_crate_name
     });
     let output = template
         .render(&variables)

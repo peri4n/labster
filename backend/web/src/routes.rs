@@ -1,6 +1,6 @@
 use crate::{controllers, state::{AppState, SharedAppState}};
 use axum::{
-    extract::{MatchedPath, Request, State}, middleware::Next, response::IntoResponse, routing::{delete, get, post}, Json, Router
+    extract::{MatchedPath, Request, State}, middleware::Next, response::IntoResponse, routing::{delete, get, post, put}, Json, Router
 };
 use tower_http::{compression::CompressionLayer, cors::CorsLayer};
 use utoipa::OpenApi;
@@ -13,12 +13,25 @@ use std::{sync::Arc, time::Instant};
 pub fn init_routes(app_state: AppState) -> Router {
     let shared_app_state = Arc::new(app_state);
     Router::new()
+
+        // Sequence endpoints
         .route("/sequences", get(controllers::sequences::read_all))
         .route("/sequences", post(controllers::sequences::create))
         .route("/sequences/{id}", delete(controllers::sequences::delete))
         .route("/sequences/{id}", get(controllers::sequences::read_one))
+
+        // Collection endpoints
+        .route("/collections", get(controllers::collections::read_all))
+        .route("/collections", post(controllers::collections::create))
+        .route("/collections/{id}", put(controllers::collections::update))
+        .route("/collections/{id}", delete(controllers::collections::delete))
+        .route("/collections/{id}", get(controllers::collections::read_one))
+
+        // Misc endpoints
         .route("/metrics", get(render_metrics))
         .route("/api-docs/openapi.json", get(openapi))
+
+        // Middlewares
         .layer(CorsLayer::permissive())
         .layer(CompressionLayer::new().gzip(true))
         .layer(axum::middleware::from_fn(track_metrics))
