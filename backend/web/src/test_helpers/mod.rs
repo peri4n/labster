@@ -214,7 +214,7 @@ pub async fn setup() -> DbTestContext {
     let config = init_config.get_or_init(|| load_config(&Environment::Test).unwrap());
 
     let test_db_pool = setup_db(&config.database).await;
-    let metrics_handle = PrometheusBuilder::new().install_recorder().unwrap();
+    let metrics_handle = PrometheusBuilder::new().build_recorder().handle();
 
     let app = init_routes(AppState {
         db_pool: test_db_pool.clone(),

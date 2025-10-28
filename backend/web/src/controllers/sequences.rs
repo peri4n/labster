@@ -7,6 +7,16 @@ use uuid::Uuid;
 use super::Pagination;
 
 #[axum::debug_handler]
+#[utoipa::path(
+    post,
+    path = "/sequences",
+    request_body = entities::sequences::SequenceChangeset,
+    responses(
+        (status = 201, description = "Sequence created successfully", body = entities::sequences::Sequence),
+        (status = 400, description = "Bad request - validation failed"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn create(
     State(app_state): State<SharedAppState>,
     Json(sequence): Json<entities::sequences::SequenceChangeset>,
@@ -16,6 +26,17 @@ pub async fn create(
 }
 
 #[axum::debug_handler]
+#[utoipa::path(
+    get,
+    path = "/sequences",
+    params(
+        ("offset" = Option<usize>, Query, description = "Number of items to skip before starting to collect the result set"),
+        ("per_page" = Option<usize>, Query, description = "Number of items to return per page")
+    ),
+    responses(
+        (status = 200, description = "List all sequences", body = [entities::sequences::Sequence])
+    )
+)]
 pub async fn read_all(
     State(app_state): State<SharedAppState>,
     Query(pagination): Query<Pagination>,
@@ -28,6 +49,46 @@ pub async fn read_all(
 }
 
 #[axum::debug_handler]
+#[utoipa::path(
+    get,
+    path = "/collections/{collection_id}/sequences",
+    params(
+        ("collection_id" = i32, Path, description = "Collection ID"),
+        ("offset" = Option<usize>, Query, description = "Number of items to skip before starting to collect the result set"),
+        ("per_page" = Option<usize>, Query, description = "Number of items to return per page")
+    ),
+    responses(
+        (status = 200, description = "List all sequences in collection", body = [entities::sequences::Sequence]),
+        (status = 404, description = "Collection not found"),
+        (status = 500, description = "Internal server error")
+    )
+)]
+pub async fn read_all_in_collection(
+    State(app_state): State<SharedAppState>,
+    Path(collection_id): Path<i32>,
+    Query(pagination): Query<Pagination>,
+) -> Result<Json<Vec<entities::sequences::Sequence>>, Error> {
+    let sequences = entities::sequences::load_all_in_collection(&app_state.db_pool, collection_id, pagination.offset(), pagination.per_page()).await?;
+
+    info!("responding with {:?}", sequences);
+
+    Ok(Json(sequences))
+}
+
+
+#[axum::debug_handler]
+#[utoipa::path(
+    get,
+    path = "/sequences/{id}",
+    params(
+        ("id" = i32, Path, description = "Sequence ID")
+    ),
+    responses(
+        (status = 200, description = "Get sequence by ID", body = entities::sequences::Sequence),
+        (status = 404, description = "Sequence not found"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn read_one(
     State(app_state): State<SharedAppState>,
     Path(id): Path<i32>,
@@ -37,20 +98,43 @@ pub async fn read_one(
 }
 
 #[axum::debug_handler]
+#[utoipa::path(
+    put,
+    path = "/sequences/{id}",
+    params(
+        ("id" = i32, Path, description = "Sequence ID")
+    ),
+    request_body = entities::sequences::SequenceChangeset,
+    responses(
+        (status = 200, description = "Sequence updated successfully", body = entities::sequences::Sequence),
+        (status = 400, description = "Bad request - validation failed"),
+        (status = 404, description = "Sequence not found"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn update(
     State(app_state): State<SharedAppState>,
-    Path(id): Path<Uuid>,
-    Json(sequence): Json<() /* e.g. entities::sequences::SequenceChangeset */>,
-) -> Result<() /* e.g. Json<entities::sequences::Sequence> */, Error> {
-    todo!("update resource via labster_db's APIs, trace, and respond!")
+    Path(id): Path<i32>,
+    Json(sequence): Json<entities::sequences::SequenceChangeset>,
+) -> Result<Json<entities::sequences::Sequence>, Error> {
 
-    /* Example:
     let sequence = entities::sequences::update(id, sequence, &app_state.db_pool).await?;
     Ok(Json(sequence))
-    */
 }
 
 #[axum::debug_handler]
+#[utoipa::path(
+    delete,
+    path = "/sequences/{id}",
+    params(
+        ("id" = i32, Path, description = "Sequence ID")
+    ),
+    responses(
+        (status = 204, description = "Sequence deleted successfully"),
+        (status = 404, description = "Sequence not found"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 pub async fn delete(
     State(app_state): State<SharedAppState>,
     Path(id): Path<i32>,

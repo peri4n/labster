@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, identifier, alphabet as \"alphabet: _\", description, sequence, created_at FROM sequences WHERE id = $1",
+  "query": "SELECT id, identifier, description, sequence, created_at FROM sequences WHERE collection_id = $1 ORDER BY id LIMIT $2 OFFSET $3",
   "describe": {
     "columns": [
       {
@@ -15,43 +15,28 @@
       },
       {
         "ordinal": 2,
-        "name": "alphabet: _",
-        "type_info": {
-          "Custom": {
-            "name": "alphabet",
-            "kind": {
-              "Enum": [
-                "dna",
-                "rna",
-                "protein"
-              ]
-            }
-          }
-        }
-      },
-      {
-        "ordinal": 3,
         "name": "description",
         "type_info": "Text"
       },
       {
-        "ordinal": 4,
+        "ordinal": 3,
         "name": "sequence",
         "type_info": "Text"
       },
       {
-        "ordinal": 5,
+        "ordinal": 4,
         "name": "created_at",
         "type_info": "Timestamp"
       }
     ],
     "parameters": {
       "Left": [
-        "Int4"
+        "Int4",
+        "Int8",
+        "Int8"
       ]
     },
     "nullable": [
-      false,
       false,
       false,
       true,
@@ -59,5 +44,5 @@
       false
     ]
   },
-  "hash": "ceb8766f98bd9f51bc52590e9339cb80b12b595603eb7bf58b62c820f93f3e71"
+  "hash": "ed9a39c0469c30ca2cdc3dc83cc23acc63902aba188b14a8a2af34d7b124881e"
 }

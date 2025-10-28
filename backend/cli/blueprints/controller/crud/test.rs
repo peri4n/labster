@@ -1,4 +1,4 @@
-use {{crate_name}}::test_helpers::{BodyExt, DbTestContext, RouterExt};
+use {{web_crate_name}}::test_helpers::{BodyExt, DbTestContext, RouterExt};
 use axum::{
     body::Body,
     http::{self, Method},

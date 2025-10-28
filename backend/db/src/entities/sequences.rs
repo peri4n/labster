@@ -1,52 +1,70 @@
+#[cfg(feature = "test-helpers")]
+use fake::Dummy;
 use serde::Deserialize;
 use serde::Serialize;
-use sqlx::types::chrono;
 use sqlx::Postgres;
+use sqlx::types::chrono;
 use validator::Validate;
 
-#[derive(Serialize, Debug, Deserialize, sqlx::Type, strum::Display)]
-#[serde(rename_all = "lowercase")]
-#[sqlx(type_name = "alphabet", rename_all = "lowercase")]
-enum Alphabet {
-    #[strum(serialize = "dna")]
-    Dna,
-
-    #[strum(serialize = "rna")]
-    Rna,
-
-    #[strum(serialize = "protein")]
-    Protein,
-}
-
-#[derive(Serialize, Debug, Deserialize)]
+#[derive(Serialize, Debug, Deserialize, utoipa::ToSchema)]
 pub struct Sequence {
-    id: i32,
-    alphabet: Alphabet,
-    identifier: String,
-    description: Option<String>,
-    sequence: String,
-    created_at: chrono::NaiveDateTime,
+    pub id: i32,
+    pub identifier: String,
+    pub description: Option<String>,
+    pub sequence: String,
+    #[schema(value_type = String, format = "date-time")]
+    pub created_at: chrono::NaiveDateTime,
 }
 
-#[derive(Deserialize, Validate)]
+impl Sequence {
+    pub fn new(
+        id: i32,
+        identifier: String,
+        description: Option<String>,
+        sequence: String,
+        created_at: chrono::NaiveDateTime,
+    ) -> Self {
+        Self {
+            id,
+            identifier,
+            description,
+            sequence,
+            created_at,
+        }
+    }
+}
+
+#[derive(Deserialize, Validate, Clone, utoipa::ToSchema)]
+#[cfg_attr(feature = "test-helpers", derive(Serialize, Dummy))]
 pub struct SequenceChangeset {
     #[validate(length(min = 1))]
-    identifier: String,
+    pub identifier: String,
 
-    alphabet: Alphabet,
-
-    description: String,
+    pub description: Option<String>,
 
     #[validate(length(min = 1))]
-    sequence: String,
+    pub sequence: String,
 }
+
 
 pub async fn load_all(
     executor: impl sqlx::Executor<'_, Database = Postgres>,
     offset: usize,
     limit: usize,
 ) -> Result<Vec<Sequence>, crate::Error> {
-    let sequences = sqlx::query_as!(Sequence, r#"SELECT id, identifier, alphabet as "alphabet: Alphabet", description, sequence, created_at FROM sequences ORDER BY id LIMIT $1 OFFSET $2"#, limit as i32, offset as i32)
+    let sequences = sqlx::query_as!(Sequence, r#"SELECT id, identifier, description, sequence, created_at FROM sequences ORDER BY id LIMIT $1 OFFSET $2"#, limit as i32, offset as i32)
+        .fetch_all(executor)
+        .await?;
+    Ok(sequences)
+}
+
+pub async fn load_all_in_collection(
+    executor: impl sqlx::Executor<'_, Database = Postgres>,
+    collection_id: i32,
+    offset: usize,
+    limit: usize,
+) -> Result<Vec<Sequence>, crate::Error> {
+    let sequences = sqlx::query_as!(Sequence, r#"SELECT id, identifier, description, sequence, created_at FROM sequences WHERE collection_id = $1 ORDER BY id LIMIT $2 OFFSET $3"#, collection_id, limit as i32, offset as i32)
         .fetch_all(executor)
         .await?;
     Ok(sequences)
@@ -58,7 +76,7 @@ pub async fn load(
 ) -> Result<Sequence, crate::Error> {
     match sqlx::query_as!(
         Sequence,
-        r#"SELECT id, identifier, alphabet as "alphabet: _", description, sequence, created_at FROM sequences WHERE id = $1"#,
+        r#"SELECT id, identifier, description, sequence, created_at FROM sequences WHERE id = $1"#,
         id
     )
     .fetch_optional(executor)
@@ -77,9 +95,8 @@ pub async fn create(
     sequence.validate()?;
 
     let record = sqlx::query!(
-        "INSERT INTO sequences (identifier, alphabet, description, sequence) VALUES ($1, ($2::text)::alphabet, $3, $4) RETURNING id, created_at",
+        "INSERT INTO sequences (identifier, description, sequence) VALUES ($1, $2, $3) RETURNING id, created_at",
         sequence.identifier,
-        sequence.alphabet.to_string(),
         sequence.description,
         sequence.sequence,
     )
@@ -90,8 +107,7 @@ pub async fn create(
     Ok(Sequence {
         id: record.id,
         identifier: sequence.identifier,
-        alphabet: sequence.alphabet,
-        description: Some(sequence.description),
+        description: sequence.description,
         sequence: sequence.sequence,
         created_at: record.created_at,
     })
@@ -105,9 +121,8 @@ pub async fn update(
     sequence.validate()?;
 
     match sqlx::query!(
-        r#"UPDATE sequences SET identifier = $1, alphabet = ($2::text)::alphabet , description = $3, sequence = $4 WHERE id = $5 RETURNING id, identifier, alphabet as "alphabet!: Alphabet", description, sequence, created_at"#,
+        r#"UPDATE sequences SET identifier = $1, description = $2, sequence = $3 WHERE id = $4 RETURNING id, identifier, description, sequence, created_at"#,
         sequence.identifier,
-        sequence.alphabet.to_string(),
         sequence.description,
         sequence.sequence,
         id
@@ -119,7 +134,6 @@ pub async fn update(
         Some(record) => Ok(Sequence {
             id: record.id,
             identifier: record.identifier,
-            alphabet: record.alphabet,
             description: record.description,
             sequence: record.sequence,
             created_at: record.created_at,
@@ -132,12 +146,9 @@ pub async fn delete(
     id: i32,
     executor: impl sqlx::Executor<'_, Database = Postgres>,
 ) -> Result<(), crate::Error> {
-    match sqlx::query!("DELETE FROM sequences WHERE id = $1 RETURNING id", id)
+    sqlx::query!("DELETE FROM sequences WHERE id = $1 RETURNING id", id)
         .fetch_optional(executor)
         .await
-        .map_err(crate::Error::DbError)?
-    {
-        Some(_) => Ok(()),
-        None => Err(crate::Error::NoRecordFound),
-    }
+        .map_err(crate::Error::DbError)
+        .map(|_| ())
 }

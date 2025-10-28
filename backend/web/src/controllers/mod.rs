@@ -22,3 +22,4 @@ impl Pagination {
         self.page.unwrap_or(0)
     }
 }
+pub mod collections;

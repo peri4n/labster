@@ -11,16 +11,52 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: labster_test
+        options: >-
+          --health-cmd="pg_isready -U test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     env:
-      SQLX_OFFLINE: true
+      SQLX_OFFLINE: false
+      DATABASE_URL: postgres://test:test@localhost:5432/labster_test
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Build
-      run: cargo build --verbose
-      working-directory: ./backend
-    - name: Run tests
-      run: cargo test --verbose
-      working-directory: ./backend
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Wait for Postgres
+        run: |
+          until pg_isready -h localhost -U test; do
+            echo "Waiting for postgres..."
+            sleep 2
+          done
+
+      - name: Run migrations (if using SQLx)
+        run: |
+          cargo db migrate
+        working-directory: ./backend
+
+      - name: Build
+        run: cargo build --verbose
+        working-directory: ./backend
+
+      - name: Run tests
+        run: cargo test --verbose
+        working-directory: ./backend

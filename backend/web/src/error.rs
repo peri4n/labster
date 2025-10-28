@@ -48,5 +48,5 @@ where
 /// taking care to log the error itself.
 fn validation_error(e: validator::ValidationErrors) -> (StatusCode, String) {
     tracing::info!(err.msg = %e, err.details = ?e, "Validation failed");
-    (StatusCode::UNPROCESSABLE_ENTITY, e.to_string())
+    (StatusCode::BAD_REQUEST, e.to_string())
 }
