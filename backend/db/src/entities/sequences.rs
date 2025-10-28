@@ -1,16 +1,19 @@
+#[cfg(feature = "test-helpers")]
+use fake::Dummy;
 use serde::Deserialize;
 use serde::Serialize;
 use sqlx::Postgres;
 use sqlx::types::chrono;
 use validator::Validate;
 
-#[derive(Serialize, Debug, Deserialize)]
+#[derive(Serialize, Debug, Deserialize, utoipa::ToSchema)]
 pub struct Sequence {
-    id: i32,
-    identifier: String,
-    description: Option<String>,
-    sequence: String,
-    created_at: chrono::NaiveDateTime,
+    pub id: i32,
+    pub identifier: String,
+    pub description: Option<String>,
+    pub sequence: String,
+    #[schema(value_type = String, format = "date-time")]
+    pub created_at: chrono::NaiveDateTime,
 }
 
 impl Sequence {
@@ -26,12 +29,13 @@ impl Sequence {
             identifier,
             description,
             sequence,
-            created_at
+            created_at,
         }
     }
 }
 
-#[derive(Deserialize, Validate)]
+#[derive(Deserialize, Validate, Clone, utoipa::ToSchema)]
+#[cfg_attr(feature = "test-helpers", derive(Serialize, Dummy))]
 pub struct SequenceChangeset {
     #[validate(length(min = 1))]
     pub identifier: String,
@@ -41,6 +45,7 @@ pub struct SequenceChangeset {
     #[validate(length(min = 1))]
     pub sequence: String,
 }
+
 
 pub async fn load_all(
     executor: impl sqlx::Executor<'_, Database = Postgres>,
@@ -141,12 +146,9 @@ pub async fn delete(
     id: i32,
     executor: impl sqlx::Executor<'_, Database = Postgres>,
 ) -> Result<(), crate::Error> {
-    match sqlx::query!("DELETE FROM sequences WHERE id = $1 RETURNING id", id)
+    sqlx::query!("DELETE FROM sequences WHERE id = $1 RETURNING id", id)
         .fetch_optional(executor)
         .await
-        .map_err(crate::Error::DbError)?
-    {
-        Some(_) => Ok(()),
-        None => Err(crate::Error::NoRecordFound),
-    }
+        .map_err(crate::Error::DbError)
+        .map(|_| ())
 }

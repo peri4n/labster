@@ -72,4 +72,6 @@ fn build_test_db_name(base_name: &str) -> String {
 fn parse_db_config(url: &str) -> PgConnectOptions {
     PgConnectOptions::from_str(url).expect("Invalid DATABASE_URL!")
 }
+
+pub mod collections;
 pub mod sequences;

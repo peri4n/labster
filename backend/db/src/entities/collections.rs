@@ -7,21 +7,21 @@ use sqlx::Postgres;
 use validator::Validate;
 use crate::entities::alphabet::Alphabet;
 
-#[derive(Serialize, Debug, Deserialize)]
+#[derive(Serialize, Debug, Deserialize, utoipa::ToSchema)]
 pub struct Collection {
-    // these are examples only
     pub id: i32,
     pub alphabet: Alphabet,
     pub name: String,
     pub description: Option<String>,
+    #[schema(value_type = String, format = "date-time")]
     pub created_at: chrono::NaiveDateTime,
+    #[schema(value_type = String, format = "date-time")]
     pub last_modified: chrono::NaiveDateTime,
 }
 
-#[derive(Deserialize, Validate, Clone)]
+#[derive(Deserialize, Validate, Clone, utoipa::ToSchema)]
 #[cfg_attr(feature = "test-helpers", derive(Serialize, Dummy))]
 pub struct CollectionChangeset {
-    // these are examples only
     #[cfg_attr(feature = "test-helpers", dummy(faker = "Name()"))]
     #[validate(length(min = 1))]
     pub name: String,

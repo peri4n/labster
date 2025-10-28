@@ -4,3 +4,8 @@ reset-db:
   cargo db create
   cargo db migrate
   cargo db seed
+
+[working-directory: 'backend']
+be-test:
+  cargo test
+

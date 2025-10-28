@@ -1564,6 +1564,7 @@ dependencies = [
  "sqlx",
  "strum",
  "thiserror",
+ "utoipa",
  "uuid",
  "validator",
 ]
