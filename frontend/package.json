@@ -30,7 +30,7 @@
     "@tanstack/react-router-devtools": "^1.133.32",
     "@tanstack/router-plugin": "^1.135.0",
     "@types/node": "^24",
-    "@types/react": "^19.2.2",
+    "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.2",
     "tailwindcss": "^4.1.17",
     "typescript": "^5.9.3",
