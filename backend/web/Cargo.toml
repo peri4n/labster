@@ -30,7 +30,7 @@ hyper = { version = "1.0", features = ["full"], optional = true }
 validator = "0.20"
 labster-macros = { path = "../macros", optional = true }
 chrono = { version = "0.4.40", features = ["serde"] }
-metrics-exporter-prometheus = { version = "0.17.2", features = ["http-listener"]}
+metrics-exporter-prometheus = { version = "0.18.1", features = ["http-listener"]}
 metrics = "0.24.2"
 utoipa = { version = "5.4.0", features = ["axum_extras", "macros"] }
 
