@@ -1,5 +1,5 @@
-version: "3.9"
 services:
+
   backend:
     build: backend
     ports:
@@ -14,11 +14,12 @@ services:
       - 3010:3010
     networks:
       - labster
+
   db:
-    image: postgres
+    image: postgres:18.1
     restart: always
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql
     networks:
       - labster
     environment:
@@ -29,7 +30,44 @@ services:
       - 5432
     ports:
       - 5432:5432
+
+  prometheus:
+    image: prom/prometheus:v2.51.2
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=7d
+    ports:
+      - 9090:9090
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - labster
+    depends_on:
+      - backend
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    ports:
+      - 3001:3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/etc/grafana/dashboards:ro
+    networks:
+      - labster
+    depends_on:
+      - prometheus
+
 volumes:
   db-data:
+  prometheus-data:
+  grafana-data:
+
 networks:
   labster:
