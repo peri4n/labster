@@ -10,7 +10,6 @@ use crate::entities::alphabet::Alphabet;
 #[derive(Serialize, Debug, Deserialize, utoipa::ToSchema)]
 pub struct Collection {
     pub id: i32,
-    pub alphabet: Alphabet,
     pub name: String,
     pub description: Option<String>,
     #[schema(value_type = String, format = "date-time")]
@@ -34,8 +33,9 @@ pub struct CollectionChangeset {
 pub async fn load_all(
     executor: impl sqlx::Executor<'_, Database = Postgres>,
 ) -> Result<Vec<Collection>, crate::Error> {
-    let collections = sqlx::query_as!(Collection, 
-        r#"SELECT id, alphabet as "alphabet: _", name, description, created_at, last_modified FROM collections"#)
+    let collections = sqlx::query_as!(
+        Collection, 
+        r#"SELECT id, name, description, created_at, last_modified FROM collections"#)
         .fetch_all(executor)
         .await?;
     Ok(collections)
@@ -47,7 +47,7 @@ pub async fn load(
 ) -> Result<Collection, crate::Error> {
     match sqlx::query_as!(
         Collection,
-        r#"SELECT id, alphabet as "alphabet: _", name, description, created_at, last_modified FROM collections WHERE id = $1"#,
+        r#"SELECT id, name, description, created_at, last_modified FROM collections WHERE id = $1"#,
         id
     )
     .fetch_optional(executor)
@@ -66,8 +66,8 @@ pub async fn create(
     collection.validate()?;
 
     let record = sqlx::query!(
-        "INSERT INTO collections (name, description, alphabet) VALUES ($1, $2, ($3::alphabet)) RETURNING id, created_at, last_modified",
-        collection.name, collection.description, collection.alphabet as Alphabet
+        "INSERT INTO collections (name, description) VALUES ($1, $2) RETURNING id, created_at, last_modified",
+        collection.name, collection.description
     )
     .fetch_one(executor)
     .await
@@ -77,7 +77,6 @@ pub async fn create(
         id: record.id,
         name: collection.name,
         description: collection.description,
-        alphabet: collection.alphabet,
         created_at: record.created_at,
         last_modified: record.last_modified,
     })
@@ -104,7 +103,6 @@ pub async fn update(
             id: record.id,
             name: record.name,
             description: record.description,
-            alphabet: collection.alphabet,
             created_at: record.created_at,
             last_modified: record.last_modified,
         }),

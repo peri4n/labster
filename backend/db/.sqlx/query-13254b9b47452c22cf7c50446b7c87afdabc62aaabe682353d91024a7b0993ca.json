@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, alphabet as \"alphabet: _\", name, description, created_at, last_modified FROM collections WHERE id = $1",
+  "query": "SELECT id, name, description, created_at, last_modified FROM collections WHERE id = $1",
   "describe": {
     "columns": [
       {
@@ -10,37 +10,21 @@
       },
       {
         "ordinal": 1,
-        "name": "alphabet: _",
-        "type_info": {
-          "Custom": {
-            "name": "alphabet",
-            "kind": {
-              "Enum": [
-                "dna",
-                "rna",
-                "protein"
-              ]
-            }
-          }
-        }
-      },
-      {
-        "ordinal": 2,
         "name": "name",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 3,
+        "ordinal": 2,
         "name": "description",
         "type_info": "Text"
       },
       {
-        "ordinal": 4,
+        "ordinal": 3,
         "name": "created_at",
         "type_info": "Timestamp"
       },
       {
-        "ordinal": 5,
+        "ordinal": 4,
         "name": "last_modified",
         "type_info": "Timestamp"
       }
@@ -53,11 +37,10 @@
     "nullable": [
       false,
       false,
-      false,
       true,
       false,
       false
     ]
   },
-  "hash": "c39298d1d85cdbf82441c90e37ba08afc7c965977c1c592f86990db031967463"
+  "hash": "13254b9b47452c22cf7c50446b7c87afdabc62aaabe682353d91024a7b0993ca"
 }

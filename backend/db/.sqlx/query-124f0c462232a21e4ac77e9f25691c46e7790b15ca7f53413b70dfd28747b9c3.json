@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "UPDATE sequences SET identifier = $1, description = $2, sequence = $3 WHERE id = $4 RETURNING id, identifier, description, sequence, created_at",
+  "query": "SELECT id, name, description, created_at, last_modified FROM collections",
   "describe": {
     "columns": [
       {
@@ -10,7 +10,7 @@
       },
       {
         "ordinal": 1,
-        "name": "identifier",
+        "name": "name",
         "type_info": "Varchar"
       },
       {
@@ -20,22 +20,17 @@
       },
       {
         "ordinal": 3,
-        "name": "sequence",
-        "type_info": "Text"
+        "name": "created_at",
+        "type_info": "Timestamp"
       },
       {
         "ordinal": 4,
-        "name": "created_at",
+        "name": "last_modified",
         "type_info": "Timestamp"
       }
     ],
     "parameters": {
-      "Left": [
-        "Varchar",
-        "Text",
-        "Text",
-        "Int4"
-      ]
+      "Left": []
     },
     "nullable": [
       false,
@@ -45,5 +40,5 @@
       false
     ]
   },
-  "hash": "c1aca4e09d1a64ae19fe97c40d1424fa6e67c64cb593b55fc56a0cb7ec60a9c0"
+  "hash": "124f0c462232a21e4ac77e9f25691c46e7790b15ca7f53413b70dfd28747b9c3"
 }

@@ -20,12 +20,14 @@ use std::{sync::Arc, time::Instant};
 pub fn init_routes(app_state: AppState) -> Router {
     let shared_app_state = Arc::new(app_state);
     Router::new()
+
         // Sequence endpoints
         .route("/sequences", get(controllers::sequences::read_all))
         .route("/sequences", post(controllers::sequences::create))
         .route("/sequences/{id}", put(controllers::sequences::update))
         .route("/sequences/{id}", delete(controllers::sequences::delete))
         .route("/sequences/{id}", get(controllers::sequences::read_one))
+
         // Collection endpoints
         .route("/collections", get(controllers::collections::read_all))
         .route("/collections", post(controllers::collections::create))
@@ -37,11 +39,13 @@ pub fn init_routes(app_state: AppState) -> Router {
         .route("/collections/{id}", get(controllers::collections::read_one))
         .route(
             "/collections/{id}/sequences",
-            get(controllers::sequences::read_all_in_collection),
+            get(controllers::collections::read_all_in_collection),
         )
+
         // Misc endpoints
         .route("/metrics", get(render_metrics))
         .route("/api-docs/openapi.json", get(openapi))
+
         // Middlewares
         .layer(CorsLayer::permissive())
         .layer(CompressionLayer::new().gzip(true))
@@ -55,7 +59,6 @@ pub fn init_routes(app_state: AppState) -> Router {
         openapi,
         controllers::sequences::create,
         controllers::sequences::read_all,
-        controllers::sequences::read_all_in_collection,
         controllers::sequences::read_one,
         controllers::sequences::update,
         controllers::sequences::delete,
@@ -64,6 +67,7 @@ pub fn init_routes(app_state: AppState) -> Router {
         controllers::collections::read_one,
         controllers::collections::update,
         controllers::collections::delete,
+        controllers::collections::read_all_in_collection,
     ),
     components(
         schemas(

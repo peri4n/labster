@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SequencesIndexRouteImport } from './routes/sequences/index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections/index'
 import { Route as SequencesSequenceIdRouteImport } from './routes/sequences/$sequenceId'
+import { Route as CollectionsCollectionIdRouteImport } from './routes/collections/$collectionId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,15 +35,22 @@ const SequencesSequenceIdRoute = SequencesSequenceIdRouteImport.update({
   path: '/sequences/$sequenceId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollectionsCollectionIdRoute = CollectionsCollectionIdRouteImport.update({
+  id: '/collections/$collectionId',
+  path: '/collections/$collectionId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/collections/$collectionId': typeof CollectionsCollectionIdRoute
   '/sequences/$sequenceId': typeof SequencesSequenceIdRoute
   '/collections': typeof CollectionsIndexRoute
   '/sequences': typeof SequencesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/collections/$collectionId': typeof CollectionsCollectionIdRoute
   '/sequences/$sequenceId': typeof SequencesSequenceIdRoute
   '/collections': typeof CollectionsIndexRoute
   '/sequences': typeof SequencesIndexRoute
@@ -50,18 +58,30 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/collections/$collectionId': typeof CollectionsCollectionIdRoute
   '/sequences/$sequenceId': typeof SequencesSequenceIdRoute
   '/collections/': typeof CollectionsIndexRoute
   '/sequences/': typeof SequencesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sequences/$sequenceId' | '/collections' | '/sequences'
+  fullPaths:
+    | '/'
+    | '/collections/$collectionId'
+    | '/sequences/$sequenceId'
+    | '/collections'
+    | '/sequences'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sequences/$sequenceId' | '/collections' | '/sequences'
+  to:
+    | '/'
+    | '/collections/$collectionId'
+    | '/sequences/$sequenceId'
+    | '/collections'
+    | '/sequences'
   id:
     | '__root__'
     | '/'
+    | '/collections/$collectionId'
     | '/sequences/$sequenceId'
     | '/collections/'
     | '/sequences/'
@@ -69,6 +89,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CollectionsCollectionIdRoute: typeof CollectionsCollectionIdRoute
   SequencesSequenceIdRoute: typeof SequencesSequenceIdRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
   SequencesIndexRoute: typeof SequencesIndexRoute
@@ -104,11 +125,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SequencesSequenceIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collections/$collectionId': {
+      id: '/collections/$collectionId'
+      path: '/collections/$collectionId'
+      fullPath: '/collections/$collectionId'
+      preLoaderRoute: typeof CollectionsCollectionIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CollectionsCollectionIdRoute: CollectionsCollectionIdRoute,
   SequencesSequenceIdRoute: SequencesSequenceIdRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
   SequencesIndexRoute: SequencesIndexRoute,

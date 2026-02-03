@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "INSERT INTO collections (name, description, alphabet) VALUES ($1, $2, ($3::alphabet)) RETURNING id, created_at, last_modified",
+  "query": "INSERT INTO collections (name, description) VALUES ($1, $2) RETURNING id, created_at, last_modified",
   "describe": {
     "columns": [
       {
@@ -22,19 +22,7 @@
     "parameters": {
       "Left": [
         "Varchar",
-        "Text",
-        {
-          "Custom": {
-            "name": "alphabet",
-            "kind": {
-              "Enum": [
-                "dna",
-                "rna",
-                "protein"
-              ]
-            }
-          }
-        }
+        "Text"
       ]
     },
     "nullable": [
@@ -43,5 +31,5 @@
       false
     ]
   },
-  "hash": "44d99c82a9ff9688bec8c827cfd9376ea4a4771e5068cf94e87ee1555ed0ecab"
+  "hash": "81ab6646549792e1c3617f0147bb3d4dec1b8e89e6cf4d60857a7aea359e750e"
 }

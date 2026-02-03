@@ -2,7 +2,6 @@ use crate::{error::Error, state::SharedAppState};
 use axum::{extract::{Path, Query, State}, http::StatusCode, Json};
 use labster_db::entities;
 use tracing::info;
-use uuid::Uuid;
 
 use super::Pagination;
 
@@ -47,34 +46,6 @@ pub async fn read_all(
 
     Ok(Json(sequences))
 }
-
-#[axum::debug_handler]
-#[utoipa::path(
-    get,
-    path = "/collections/{collection_id}/sequences",
-    params(
-        ("collection_id" = i32, Path, description = "Collection ID"),
-        ("offset" = Option<usize>, Query, description = "Number of items to skip before starting to collect the result set"),
-        ("per_page" = Option<usize>, Query, description = "Number of items to return per page")
-    ),
-    responses(
-        (status = 200, description = "List all sequences in collection", body = [entities::sequences::Sequence]),
-        (status = 404, description = "Collection not found"),
-        (status = 500, description = "Internal server error")
-    )
-)]
-pub async fn read_all_in_collection(
-    State(app_state): State<SharedAppState>,
-    Path(collection_id): Path<i32>,
-    Query(pagination): Query<Pagination>,
-) -> Result<Json<Vec<entities::sequences::Sequence>>, Error> {
-    let sequences = entities::sequences::load_all_in_collection(&app_state.db_pool, collection_id, pagination.offset(), pagination.per_page()).await?;
-
-    info!("responding with {:?}", sequences);
-
-    Ok(Json(sequences))
-}
-
 
 #[axum::debug_handler]
 #[utoipa::path(

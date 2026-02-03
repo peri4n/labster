@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "INSERT INTO collections (name, description, alphabet) VALUES ($1, $2, $3) RETURNING id, created_at, last_modified",
+  "query": "UPDATE sequences SET identifier = $1, description = $2, sequence = $3, alphabet = ($4::alphabet) WHERE id = $5 RETURNING id, created_at",
   "describe": {
     "columns": [
       {
@@ -12,16 +12,12 @@
         "ordinal": 1,
         "name": "created_at",
         "type_info": "Timestamp"
-      },
-      {
-        "ordinal": 2,
-        "name": "last_modified",
-        "type_info": "Timestamp"
       }
     ],
     "parameters": {
       "Left": [
         "Varchar",
+        "Text",
         "Text",
         {
           "Custom": {
@@ -34,14 +30,14 @@
               ]
             }
           }
-        }
+        },
+        "Int4"
       ]
     },
     "nullable": [
       false,
-      false,
       false
     ]
   },
-  "hash": "190488053a1dad746dd4b2b8a9057ac8a6c9e751c061e3956ecef11410ece483"
+  "hash": "027d6f29e351d998134d3b7f3183d52c2c5db60d414da85417e0ff95b41f9209"
 }

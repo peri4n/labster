@@ -7,7 +7,6 @@ CREATE TABLE collections (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   description TEXT,
-  alphabet alphabet NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -16,6 +15,7 @@ CREATE TABLE sequences (
   id SERIAL PRIMARY KEY,
   collection_id INTEGER REFERENCES collections(id),
   identifier VARCHAR(255) NOT NULL,
+  alphabet alphabet NOT NULL,
   description TEXT,
   sequence TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,

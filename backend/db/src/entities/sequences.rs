@@ -6,10 +6,13 @@ use sqlx::Postgres;
 use sqlx::types::chrono;
 use validator::Validate;
 
+use crate::entities::alphabet::Alphabet;
+
 #[derive(Serialize, Debug, Deserialize, utoipa::ToSchema)]
 pub struct Sequence {
     pub id: i32,
     pub identifier: String,
+    pub alphabet: Alphabet,
     pub description: Option<String>,
     pub sequence: String,
     #[schema(value_type = String, format = "date-time")]
@@ -20,6 +23,7 @@ impl Sequence {
     pub fn new(
         id: i32,
         identifier: String,
+        alphabet: Alphabet,
         description: Option<String>,
         sequence: String,
         created_at: chrono::NaiveDateTime,
@@ -27,6 +31,7 @@ impl Sequence {
         Self {
             id,
             identifier,
+            alphabet,
             description,
             sequence,
             created_at,
@@ -42,6 +47,8 @@ pub struct SequenceChangeset {
 
     pub description: Option<String>,
 
+    pub alphabet: Alphabet,
+
     #[validate(length(min = 1))]
     pub sequence: String,
 }
@@ -52,19 +59,27 @@ pub async fn load_all(
     offset: usize,
     limit: usize,
 ) -> Result<Vec<Sequence>, crate::Error> {
-    let sequences = sqlx::query_as!(Sequence, r#"SELECT id, identifier, description, sequence, created_at FROM sequences ORDER BY id LIMIT $1 OFFSET $2"#, limit as i32, offset as i32)
+    let sequences = sqlx::query_as!(
+        Sequence, 
+        r#"SELECT id, identifier, alphabet as "alphabet!: Alphabet", description, sequence, created_at FROM sequences ORDER BY id LIMIT $1 OFFSET $2"#, 
+        limit as i32, 
+        offset as i32)
         .fetch_all(executor)
         .await?;
     Ok(sequences)
 }
 
-pub async fn load_all_in_collection(
+pub async fn load_from_collection(
     executor: impl sqlx::Executor<'_, Database = Postgres>,
     collection_id: i32,
     offset: usize,
     limit: usize,
 ) -> Result<Vec<Sequence>, crate::Error> {
-    let sequences = sqlx::query_as!(Sequence, r#"SELECT id, identifier, description, sequence, created_at FROM sequences WHERE collection_id = $1 ORDER BY id LIMIT $2 OFFSET $3"#, collection_id, limit as i32, offset as i32)
+    let sequences = sqlx::query_as!(
+        Sequence, 
+        r#"SELECT id, identifier, description, alphabet as "alphabet!: Alphabet", sequence, created_at FROM sequences WHERE collection_id = $1 ORDER BY id LIMIT $2 OFFSET $3"#, 
+        collection_id, limit as i32, 
+        offset as i32)
         .fetch_all(executor)
         .await?;
     Ok(sequences)
@@ -76,7 +91,7 @@ pub async fn load(
 ) -> Result<Sequence, crate::Error> {
     match sqlx::query_as!(
         Sequence,
-        r#"SELECT id, identifier, description, sequence, created_at FROM sequences WHERE id = $1"#,
+        r#"SELECT id, identifier, alphabet as "alphabet!: Alphabet", description, sequence, created_at FROM sequences WHERE id = $1"#,
         id
     )
     .fetch_optional(executor)
@@ -107,6 +122,7 @@ pub async fn create(
     Ok(Sequence {
         id: record.id,
         identifier: sequence.identifier,
+        alphabet: Alphabet::Dna, // Default alphabet; adjust as necessary
         description: sequence.description,
         sequence: sequence.sequence,
         created_at: record.created_at,
@@ -121,10 +137,11 @@ pub async fn update(
     sequence.validate()?;
 
     match sqlx::query!(
-        r#"UPDATE sequences SET identifier = $1, description = $2, sequence = $3 WHERE id = $4 RETURNING id, identifier, description, sequence, created_at"#,
+        r#"UPDATE sequences SET identifier = $1, description = $2, sequence = $3, alphabet = ($4::alphabet) WHERE id = $5 RETURNING id, created_at"#,
         sequence.identifier,
         sequence.description,
         sequence.sequence,
+        sequence.alphabet as Alphabet,
         id
     )
     .fetch_optional(executor)
@@ -133,9 +150,10 @@ pub async fn update(
     {
         Some(record) => Ok(Sequence {
             id: record.id,
-            identifier: record.identifier,
-            description: record.description,
-            sequence: record.sequence,
+            identifier: sequence.identifier,
+            alphabet: sequence.alphabet,
+            description: sequence.description,
+            sequence: sequence.sequence,
             created_at: record.created_at,
         }),
         None => Err(crate::Error::NoRecordFound),

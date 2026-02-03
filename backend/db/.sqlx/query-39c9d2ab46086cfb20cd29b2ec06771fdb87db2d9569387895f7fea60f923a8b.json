@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, alphabet as \"alphabet: _\", name, description, created_at, last_modified FROM collections",
+  "query": "SELECT id, identifier, alphabet as \"alphabet!: Alphabet\", description, sequence, created_at FROM sequences WHERE collection_id = $1",
   "describe": {
     "columns": [
       {
@@ -10,7 +10,12 @@
       },
       {
         "ordinal": 1,
-        "name": "alphabet: _",
+        "name": "identifier",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "alphabet!: Alphabet",
         "type_info": {
           "Custom": {
             "name": "alphabet",
@@ -25,28 +30,25 @@
         }
       },
       {
-        "ordinal": 2,
-        "name": "name",
-        "type_info": "Varchar"
-      },
-      {
         "ordinal": 3,
         "name": "description",
         "type_info": "Text"
       },
       {
         "ordinal": 4,
-        "name": "created_at",
-        "type_info": "Timestamp"
+        "name": "sequence",
+        "type_info": "Text"
       },
       {
         "ordinal": 5,
-        "name": "last_modified",
+        "name": "created_at",
         "type_info": "Timestamp"
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Int4"
+      ]
     },
     "nullable": [
       false,
@@ -57,5 +59,5 @@
       false
     ]
   },
-  "hash": "97d8a53f5af3cac45e78c4d0e4166e0d5a25bf019d080d05b421b2a969362293"
+  "hash": "39c9d2ab46086cfb20cd29b2ec06771fdb87db2d9569387895f7fea60f923a8b"
 }

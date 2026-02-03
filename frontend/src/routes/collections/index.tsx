@@ -6,14 +6,6 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ConfirmationDialog from '@components/confirmation-dialog';
 
-function renderAlphabetCell(alphabet: string) {
-  switch (alphabet) {
-    case 'dna': return (<Chip label="DNA" color="primary" />)
-    case 'rna': return (<Chip label="RNA" color="error" />)
-    case 'protein': return (<Chip label="Protein" color="info" />)
-  }
-}
-
 function SkeletonRow() {
   return (
     <TableRow>
@@ -39,8 +31,6 @@ function CollectionListPage() {
   let [confirmationDialogVisible, setConfirmationDialogVisible] = useState(false);
   let [clickedRow, setClickedRow] = useState<number | null>(null);
   let [selected, setSelected] = useState<number[]>([]);
-
-  console.log("Rendering CollectionListPage");
 
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -131,7 +121,6 @@ function CollectionListPage() {
                     />
                   </TableCell>
                   <TableCell>Name</TableCell>
-                  <TableCell>Alphabet</TableCell>
                   <TableCell>Description</TableCell>
                   <TableCell>Created at</TableCell>
                   <TableCell>Last Modified</TableCell>
@@ -163,7 +152,6 @@ function CollectionListPage() {
                           />
                         </TableCell>
                         <TableCell>{row.name}</TableCell>
-                        <TableCell>{renderAlphabetCell(row.alphabet)}</TableCell>
                         <TableCell>{row.description}</TableCell>
                         <TableCell>{new Date(row.created_at).toLocaleString()}</TableCell>
                         <TableCell>{new Date(row.last_modified).toLocaleString()}</TableCell>
