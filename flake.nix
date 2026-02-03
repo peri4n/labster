@@ -47,7 +47,6 @@
           rust-analyzer
 
           # Database
-          postgresql
           sqlx-cli
 
           # Testing
