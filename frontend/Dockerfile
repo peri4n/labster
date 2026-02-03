@@ -1,5 +1,5 @@
 # Step 1: Build the React app
-FROM node:23 AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # Step 2: Serve with Nginx
-FROM nginx:latest
+FROM nginx:1.29.4-alpine
 
 # Copy built React files to Nginx's default directory
 COPY --from=builder /app/dist /usr/share/nginx/html
