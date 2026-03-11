@@ -1,16 +1,16 @@
 import { Card, CardContent, CardHeader, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Checkbox, TablePagination, Skeleton, Paper } from '@mui/material'
 import { useState } from 'react'
-import type { Sequence } from "@models/sequence";
 import { DeleteOutline } from '@mui/icons-material';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import AddSequenceDropdown from '@components/add-sequence-dropdown';
 import ConfirmationDialog from '@components/confirmation-dialog';
+import { apiClient } from '@api/client';
 
 function renderAplhabetCell(alphabet: string) {
   switch (alphabet) {
     case 'dna': return (<Chip label="DNA" color="primary" variant="outlined" size="small"/>)
-    case 'rna': return (<Chip label="RNA" color="error" variant="outlined" size="small"/>)
+    case 'rna': return (<Chip label="RNA" color="warning" variant="outlined" size="small"/>)
     case 'protein': return (<Chip label="Protein" color="info" variant="outlined" size="small"/>)
   }
 }
@@ -52,22 +52,11 @@ function SequenceListPage() {
 
   const { isLoading, data } = useQuery({
     queryKey: ['fetch-sequences', paginationModel],
-    queryFn: async () => {
-      const response = await fetch(`http://localhost:3000/sequences?page=${paginationModel.page}&per_page=${paginationModel.pageSize}`)
-      const result: Sequence[] = await response.json();
-      return result
-    },
+    queryFn: () => apiClient.getSequences(paginationModel.page, paginationModel.pageSize),
   })
 
   const deleteSequence = useMutation({
-    mutationFn: async (id: number) => {
-      await fetch(`http://localhost:3000/sequences/${id}`, {
-        method: "DELETE",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      });
-    },
+    mutationFn: (id: number) => apiClient.deleteSequence(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['fetch-sequences']

@@ -2,7 +2,7 @@ import { Box, Card, CardContent, CardHeader, Typography, Chip, Divider, Stack, I
 import { ContentCopy, Timeline, Info, ExpandMore, ExpandLess, Search } from "@mui/icons-material";
 import { DNAVisualizer } from "@components/dna-visualizer";
 import { createFileRoute } from "@tanstack/react-router";
-import type { Sequence } from "@models/sequence";
+import { apiClient } from '@api/client';
 import { useState } from "react";
 
 export function SequenceDetailsPage() {
@@ -250,8 +250,7 @@ export function SequenceDetailsPage() {
 export const Route = createFileRoute('/sequences/$sequenceId')({
   component: SequenceDetailsPage,
   loader: async ({ params }) => {
-    const response = await fetch('http://localhost:3000/sequences/' + params.sequenceId)
-    const result: Sequence = await response.json();
+    const result = await apiClient.getSequence(params.sequenceId);
     return { ...result };
   }
 })

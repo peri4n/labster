@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Checkbox, TablePagination, Skeleton } from '@mui/material'
 import { useState } from 'react'
-import type { Collection } from "@models/collection";
 import { DeleteOutline } from '@mui/icons-material';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ConfirmationDialog from '@components/confirmation-dialog';
+import { apiClient } from '@api/client';
 
 function SkeletonRow() {
   return (
@@ -39,22 +39,11 @@ function CollectionListPage() {
 
   const { isLoading, data } = useQuery({
     queryKey: ['fetch-collections', paginationModel],
-    queryFn: async () => {
-      const response = await fetch(`http://localhost:3000/collections?page=${paginationModel.page}&per_page=${paginationModel.pageSize}`)
-      const result: Collection[] = await response.json();
-      return result
-    },
+    queryFn: () => apiClient.getCollections(paginationModel.page, paginationModel.pageSize),
   })
 
   const deleteCollection = useMutation({
-    mutationFn: async (id: number) => {
-      await fetch(`http://localhost:3000/collections/${id}`, {
-        method: "DELETE",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      });
-    },
+    mutationFn: (id: number) => apiClient.deleteCollection(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['fetch-collections']

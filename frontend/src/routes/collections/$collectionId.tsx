@@ -2,8 +2,8 @@ import { Card, CardContent, CardHeader, Chip, Table, TableBody, TableCell, Table
 import { DeleteOutline } from "@mui/icons-material";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Sequence } from "@models/sequence";
 import type { Collection } from "@models/collection";
+import { apiClient } from '@api/client';
 import { useState } from "react";
 
 function renderAlphabetCell(alphabet: string) {
@@ -42,20 +42,11 @@ function CollectionDetailsPage() {
 
   const { isLoading, data } = useQuery({
     queryKey: ['fetch-collection-sequences', collection.id, paginationModel],
-    queryFn: async () => {
-      const response = await fetch(`http://localhost:3000/collections/${collection.id}/sequences?page=${paginationModel.page}&per_page=${paginationModel.pageSize}`);
-      const result: Sequence[] = await response.json();
-      return result;
-    },
+    queryFn: () => apiClient.getCollectionSequences(collection.id, paginationModel.page, paginationModel.pageSize),
   });
 
   const deleteSequence = useMutation({
-    mutationFn: async (id: number) => {
-      await fetch(`http://localhost:3000/sequences/${id}` , {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
-      });
-    },
+    mutationFn: (id: number) => apiClient.deleteSequence(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fetch-collection-sequences', collection.id] });
     }
@@ -151,8 +142,7 @@ function CollectionDetailsPage() {
 export const Route = createFileRoute('/collections/$collectionId')({
   component: CollectionDetailsPage,
   loader: async ({ params }) => {
-    const cRes = await fetch('http://localhost:3000/collections/' + params.collectionId);
-    const collection: Collection = await cRes.json();
+    const collection = await apiClient.getCollection(params.collectionId);
     return { collection };
   }
 })

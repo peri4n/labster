@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useSnackbar } from '@util/snackbar-provider';
+import { apiClient } from '@api/client';
 import BaseDialog from './base-dialog';
 
 interface FileUploadProps {
@@ -19,20 +20,16 @@ function FileUploadDialog({ open, handleClose }: FileUploadProps) {
 
   const uploadSequences = useMutation({
     mutationFn: async (sequences: Array<{ identifier: string, sequence: string, description?: string, alphabet?: string }>) => {
-      const promises = sequences.map(sequence =>
-        fetch('http://localhost:3000/sequences', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            ...sequence,
+      await Promise.all(
+        sequences.map(sequence =>
+          apiClient.createSequence({
+            identifier: sequence.identifier,
             description: sequence.description || '',
-            alphabet: sequence.alphabet || 'dna'
+            sequence: sequence.sequence,
+            alphabet: sequence.alphabet || 'dna',
           })
-        })
+        )
       );
-      await Promise.all(promises);
     },
     onSuccess: (_, sequences) => {
       queryClient.invalidateQueries({

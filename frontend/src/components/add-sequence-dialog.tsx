@@ -6,6 +6,7 @@ import type { Alphabet } from "@models/sequence";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { useSnackbar } from "@util/snackbar-provider";
+import { apiClient } from '@api/client';
 
 interface AddDialogProps {
   open: boolean;
@@ -37,15 +38,7 @@ function AddSequenceDialog({ open, handleClose }: AddDialogProps) {
   const queryClient = useQueryClient();
 
   const addSequence = useMutation({
-    mutationFn: async (sequence: AddSequenceInput) => {
-      await fetch('http://localhost:3000/sequences', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ ...sequence })
-      });
-    },
+    mutationFn: (sequence: AddSequenceInput) => apiClient.createSequence(sequence),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['fetch-sequences']
