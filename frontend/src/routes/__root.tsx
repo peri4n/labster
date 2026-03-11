@@ -1,6 +1,11 @@
 import "./app.css";
 import { AppBar, Box, CssBaseline, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography, Divider } from "@mui/material";
-import { Home, Biotech, Collections } from "@mui/icons-material";
+import {
+  Home, Biotech, Collections,
+  Summarize, Science, ChangeHistory,
+  CompareArrows, ManageSearch, BarChart,
+  FileUpload, FileDownload,
+} from "@mui/icons-material";
 
 import { Link, Outlet, createRootRoute } from '@tanstack/react-router'
 
@@ -8,7 +13,7 @@ export const Route = createRootRoute({
   component: RootComponent,
 })
 
-const drawerWidth = 180;
+const drawerWidth = 220;
 
 const createMenuItem = (text: string, icon: React.ReactNode, to: string) =>
   <Link to={to}>
@@ -41,18 +46,34 @@ function RootComponent() {
           [`& .MuiDrawer-paper`]: {
             width: drawerWidth,
             boxSizing: 'border-box',
-            backgroundColor: '#f8f9fa',
-            borderRight: '1px solid #e9ecef'
+            borderRight: '1px solid',
+            borderColor: 'divider',
           },
         }}
       >
         <Toolbar />
         <Box sx={{ overflow: 'auto', pt: 1 }}>
-          <List>
+          <List dense>
             {createMenuItem("Home", <Home color="primary" />, "/")}
-            {createMenuItem("Sequences", <Biotech color="primary" />, "/sequences")}
+
             <Divider sx={{ mx: 2, my: 1 }} />
+
+            {createMenuItem("Sequences", <Biotech color="primary" />, "/sequences")}
             {createMenuItem("Collections", <Collections color="primary" />, "/collections")}
+            {createMenuItem("Annotations", <Summarize color="primary" />, "/annotations")}
+            {createMenuItem("Primers", <Science color="primary" />, "/primers")}
+            {createMenuItem("Plasmids", <ChangeHistory color="primary" />, "/plasmids")}
+
+            <Divider sx={{ mx: 2, my: 1 }} />
+
+            {createMenuItem("Alignment", <CompareArrows color="primary" />, "/alignment")}
+            {createMenuItem("Search", <ManageSearch color="primary" />, "/search")}
+            {createMenuItem("Statistics", <BarChart color="primary" />, "/statistics")}
+
+            <Divider sx={{ mx: 2, my: 1 }} />
+
+            {createMenuItem("Import", <FileUpload color="primary" />, "/import")}
+            {createMenuItem("Export", <FileDownload color="primary" />, "/export")}
           </List>
         </Box>
       </Drawer>

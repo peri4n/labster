@@ -10,8 +10,16 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StatisticsIndexRouteImport } from './routes/statistics/index'
 import { Route as SequencesIndexRouteImport } from './routes/sequences/index'
+import { Route as SearchIndexRouteImport } from './routes/search/index'
+import { Route as PrimersIndexRouteImport } from './routes/primers/index'
+import { Route as PlasmidsIndexRouteImport } from './routes/plasmids/index'
+import { Route as ImportIndexRouteImport } from './routes/import/index'
+import { Route as ExportIndexRouteImport } from './routes/export/index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections/index'
+import { Route as AnnotationsIndexRouteImport } from './routes/annotations/index'
+import { Route as AlignmentIndexRouteImport } from './routes/alignment/index'
 import { Route as SequencesSequenceIdRouteImport } from './routes/sequences/$sequenceId'
 import { Route as CollectionsCollectionIdRouteImport } from './routes/collections/$collectionId'
 
@@ -20,14 +28,54 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StatisticsIndexRoute = StatisticsIndexRouteImport.update({
+  id: '/statistics/',
+  path: '/statistics/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SequencesIndexRoute = SequencesIndexRouteImport.update({
   id: '/sequences/',
   path: '/sequences/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SearchIndexRoute = SearchIndexRouteImport.update({
+  id: '/search/',
+  path: '/search/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrimersIndexRoute = PrimersIndexRouteImport.update({
+  id: '/primers/',
+  path: '/primers/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlasmidsIndexRoute = PlasmidsIndexRouteImport.update({
+  id: '/plasmids/',
+  path: '/plasmids/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImportIndexRoute = ImportIndexRouteImport.update({
+  id: '/import/',
+  path: '/import/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExportIndexRoute = ExportIndexRouteImport.update({
+  id: '/export/',
+  path: '/export/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
   id: '/collections/',
   path: '/collections/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnnotationsIndexRoute = AnnotationsIndexRouteImport.update({
+  id: '/annotations/',
+  path: '/annotations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlignmentIndexRoute = AlignmentIndexRouteImport.update({
+  id: '/alignment/',
+  path: '/alignment/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SequencesSequenceIdRoute = SequencesSequenceIdRouteImport.update({
@@ -45,23 +93,47 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdRoute
   '/sequences/$sequenceId': typeof SequencesSequenceIdRoute
+  '/alignment': typeof AlignmentIndexRoute
+  '/annotations': typeof AnnotationsIndexRoute
   '/collections': typeof CollectionsIndexRoute
+  '/export': typeof ExportIndexRoute
+  '/import': typeof ImportIndexRoute
+  '/plasmids': typeof PlasmidsIndexRoute
+  '/primers': typeof PrimersIndexRoute
+  '/search': typeof SearchIndexRoute
   '/sequences': typeof SequencesIndexRoute
+  '/statistics': typeof StatisticsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdRoute
   '/sequences/$sequenceId': typeof SequencesSequenceIdRoute
+  '/alignment': typeof AlignmentIndexRoute
+  '/annotations': typeof AnnotationsIndexRoute
   '/collections': typeof CollectionsIndexRoute
+  '/export': typeof ExportIndexRoute
+  '/import': typeof ImportIndexRoute
+  '/plasmids': typeof PlasmidsIndexRoute
+  '/primers': typeof PrimersIndexRoute
+  '/search': typeof SearchIndexRoute
   '/sequences': typeof SequencesIndexRoute
+  '/statistics': typeof StatisticsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdRoute
   '/sequences/$sequenceId': typeof SequencesSequenceIdRoute
+  '/alignment/': typeof AlignmentIndexRoute
+  '/annotations/': typeof AnnotationsIndexRoute
   '/collections/': typeof CollectionsIndexRoute
+  '/export/': typeof ExportIndexRoute
+  '/import/': typeof ImportIndexRoute
+  '/plasmids/': typeof PlasmidsIndexRoute
+  '/primers/': typeof PrimersIndexRoute
+  '/search/': typeof SearchIndexRoute
   '/sequences/': typeof SequencesIndexRoute
+  '/statistics/': typeof StatisticsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -69,30 +141,62 @@ export interface FileRouteTypes {
     | '/'
     | '/collections/$collectionId'
     | '/sequences/$sequenceId'
+    | '/alignment'
+    | '/annotations'
     | '/collections'
+    | '/export'
+    | '/import'
+    | '/plasmids'
+    | '/primers'
+    | '/search'
     | '/sequences'
+    | '/statistics'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/collections/$collectionId'
     | '/sequences/$sequenceId'
+    | '/alignment'
+    | '/annotations'
     | '/collections'
+    | '/export'
+    | '/import'
+    | '/plasmids'
+    | '/primers'
+    | '/search'
     | '/sequences'
+    | '/statistics'
   id:
     | '__root__'
     | '/'
     | '/collections/$collectionId'
     | '/sequences/$sequenceId'
+    | '/alignment/'
+    | '/annotations/'
     | '/collections/'
+    | '/export/'
+    | '/import/'
+    | '/plasmids/'
+    | '/primers/'
+    | '/search/'
     | '/sequences/'
+    | '/statistics/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CollectionsCollectionIdRoute: typeof CollectionsCollectionIdRoute
   SequencesSequenceIdRoute: typeof SequencesSequenceIdRoute
+  AlignmentIndexRoute: typeof AlignmentIndexRoute
+  AnnotationsIndexRoute: typeof AnnotationsIndexRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
+  ExportIndexRoute: typeof ExportIndexRoute
+  ImportIndexRoute: typeof ImportIndexRoute
+  PlasmidsIndexRoute: typeof PlasmidsIndexRoute
+  PrimersIndexRoute: typeof PrimersIndexRoute
+  SearchIndexRoute: typeof SearchIndexRoute
   SequencesIndexRoute: typeof SequencesIndexRoute
+  StatisticsIndexRoute: typeof StatisticsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -104,6 +208,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/statistics/': {
+      id: '/statistics/'
+      path: '/statistics'
+      fullPath: '/statistics'
+      preLoaderRoute: typeof StatisticsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sequences/': {
       id: '/sequences/'
       path: '/sequences'
@@ -111,11 +222,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SequencesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/search/': {
+      id: '/search/'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/primers/': {
+      id: '/primers/'
+      path: '/primers'
+      fullPath: '/primers'
+      preLoaderRoute: typeof PrimersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plasmids/': {
+      id: '/plasmids/'
+      path: '/plasmids'
+      fullPath: '/plasmids'
+      preLoaderRoute: typeof PlasmidsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/import/': {
+      id: '/import/'
+      path: '/import'
+      fullPath: '/import'
+      preLoaderRoute: typeof ImportIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/export/': {
+      id: '/export/'
+      path: '/export'
+      fullPath: '/export'
+      preLoaderRoute: typeof ExportIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collections/': {
       id: '/collections/'
       path: '/collections'
       fullPath: '/collections'
       preLoaderRoute: typeof CollectionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/annotations/': {
+      id: '/annotations/'
+      path: '/annotations'
+      fullPath: '/annotations'
+      preLoaderRoute: typeof AnnotationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alignment/': {
+      id: '/alignment/'
+      path: '/alignment'
+      fullPath: '/alignment'
+      preLoaderRoute: typeof AlignmentIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sequences/$sequenceId': {
@@ -139,8 +299,16 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CollectionsCollectionIdRoute: CollectionsCollectionIdRoute,
   SequencesSequenceIdRoute: SequencesSequenceIdRoute,
+  AlignmentIndexRoute: AlignmentIndexRoute,
+  AnnotationsIndexRoute: AnnotationsIndexRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
+  ExportIndexRoute: ExportIndexRoute,
+  ImportIndexRoute: ImportIndexRoute,
+  PlasmidsIndexRoute: PlasmidsIndexRoute,
+  PrimersIndexRoute: PrimersIndexRoute,
+  SearchIndexRoute: SearchIndexRoute,
   SequencesIndexRoute: SequencesIndexRoute,
+  StatisticsIndexRoute: StatisticsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

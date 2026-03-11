@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { darkTeal, ghostWhite, silver, paleSlate, frostedBlue } from './theme/palette';
 import { useState } from 'react';
 import { Router } from '@tanstack/react-router';
 import { RouterProvider, createRouter } from '@tanstack/react-router'
@@ -30,36 +29,7 @@ function getRouter(queryClient: QueryClient) {
   });
 }
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: darkTeal,
-      contrastText: '#ffffff',
-    },
-    secondary: {
-      main: frostedBlue,
-      contrastText: '#074f57',
-    },
-    info: {
-      main: ghostWhite,
-      contrastText: '#074f57',
-    },
-    background: {
-      default: ghostWhite,
-      paper: '#ffffff',
-    },
-    text: {
-      primary: darkTeal,
-      secondary: paleSlate,
-    },
-    divider: silver,
-    darkTeal,
-    ghostWhite,
-    silver,
-    paleSlate,
-    frostedBlue,
-  },
-});
+const theme = createTheme();
 
 export function App() {
   const queryClient = new QueryClient();

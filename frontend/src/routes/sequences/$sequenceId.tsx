@@ -1,5 +1,5 @@
-import { Box, Card, CardContent, CardHeader, Typography, Chip, Divider, Stack, IconButton, Tooltip, Collapse } from "@mui/material";
-import { ContentCopy, Timeline, Info, ExpandMore, ExpandLess } from "@mui/icons-material";
+import { Box, Card, CardContent, CardHeader, Typography, Chip, Divider, Stack, IconButton, Tooltip, Collapse, TextField, InputAdornment } from "@mui/material";
+import { ContentCopy, Timeline, Info, ExpandMore, ExpandLess, Search } from "@mui/icons-material";
 import { DNAVisualizer } from "@components/dna-visualizer";
 import { createFileRoute } from "@tanstack/react-router";
 import type { Sequence } from "@models/sequence";
@@ -10,6 +10,7 @@ export function SequenceDetailsPage() {
   const { id, identifier, description, sequence, alphabet, created_at } = sequenceData;
   const [copySuccess, setCopySuccess] = useState(false);
   const [rawSequenceExpanded, setRawSequenceExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleCopySequence = async () => {
     try {
@@ -64,7 +65,8 @@ export function SequenceDetailsPage() {
         {/* Details Section */}
         <Card variant="outlined">
           <CardHeader 
-            title="Sequence Information" 
+            title="Sequence Details"
+            slotProps={{ title: { variant: 'h5', color: 'primary.main' } }}
             avatar={<Info color="primary" />}
             sx={{ pb: 1 }}
           />
@@ -153,29 +155,30 @@ export function SequenceDetailsPage() {
           <Card variant="outlined">
             <CardHeader 
               title="Sequence Visualization"
-              avatar={<Timeline color="primary" />}
+              slotProps={{ title: { variant: 'h5', color: 'primary.main' } }}
+              avatar={<Timeline color="primary" fontSize="large"/>}
               action={
-                <Tooltip title={copySuccess ? "Copied!" : "Copy sequence to clipboard"}>
-                  <IconButton onClick={handleCopySequence} color={copySuccess ? "success" : "default"}>
-                    <ContentCopy />
-                  </IconButton>
-                </Tooltip>
+                <TextField
+                  size="small"
+                  placeholder="Search sequence..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search fontSize="small" />
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                  sx={{ minWidth: 200 }}
+                />
               }
               sx={{ pb: 1 }}
             />
             <CardContent>
-              <Box sx={{ 
-                maxHeight: '60vh', 
-                overflow: 'auto',
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 1,
-                p: 2,
-                backgroundColor: 'background.paper',
-                width: '100%'
-              }}>
-                <DNAVisualizer sequence={sequence} alphabet={alphabet} />
-              </Box>
+              <DNAVisualizer sequence={sequence} alphabet={alphabet} search={searchQuery ? { query: searchQuery } : undefined} />
               
               {/* Raw Sequence Text - Collapsible */}
               <Box sx={{ mt: 2 }}>
@@ -200,6 +203,16 @@ export function SequenceDetailsPage() {
                   <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
                     ({rawSequenceExpanded ? 'Click to collapse' : 'Click to expand'})
                   </Typography>
+                  <Tooltip title={copySuccess ? "Copied!" : "Copy sequence to clipboard"}>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => { e.stopPropagation(); handleCopySequence(); }}
+                      color={copySuccess ? "success" : "default"}
+                      sx={{ ml: 'auto' }}
+                    >
+                      <ContentCopy fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
                 
                 <Collapse in={rawSequenceExpanded}>
