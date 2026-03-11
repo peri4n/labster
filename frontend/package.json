@@ -7,7 +7,10 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "types": "tsc --noEmit"
+    "types": "tsc --noEmit",
+    "format": "biome format --write .",
+    "lint": "biome lint --write .",
+    "check": "biome check --write ."
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -25,6 +28,7 @@
     "seqviz": "^3.10.18"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.4.6",
     "@react-router/dev": "^7.9.6",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-query-devtools": "^5.90.2",

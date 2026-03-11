@@ -1,4 +1,4 @@
-import type { Alphabet } from './sequence';
+import type { Alphabet } from "./sequence";
 
 export type Collection = {
   id: number;
@@ -7,4 +7,4 @@ export type Collection = {
   alphabet: Alphabet;
   created_at: Date;
   last_modified: Date;
-}
+};

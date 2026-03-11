@@ -1,5 +1,5 @@
-import { Box, Typography } from '@mui/material';
-import { createFileRoute } from '@tanstack/react-router';
+import { Box, Typography } from "@mui/material";
+import { createFileRoute } from "@tanstack/react-router";
 
 function SearchPage() {
   return (
@@ -10,6 +10,6 @@ function SearchPage() {
   );
 }
 
-export const Route = createFileRoute('/search/')({
+export const Route = createFileRoute("/search/")({
   component: SearchPage,
-})
+});

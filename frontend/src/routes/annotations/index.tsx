@@ -1,5 +1,5 @@
-import { Box, Typography } from '@mui/material';
-import { createFileRoute } from '@tanstack/react-router';
+import { Box, Typography } from "@mui/material";
+import { createFileRoute } from "@tanstack/react-router";
 
 function AnnotationsPage() {
   return (
@@ -10,6 +10,6 @@ function AnnotationsPage() {
   );
 }
 
-export const Route = createFileRoute('/annotations/')({
+export const Route = createFileRoute("/annotations/")({
   component: AnnotationsPage,
-})
+});

@@ -1,5 +1,5 @@
-import { Box, Typography } from '@mui/material';
-import { createFileRoute } from '@tanstack/react-router';
+import { Box, Typography } from "@mui/material";
+import { createFileRoute } from "@tanstack/react-router";
 
 function ExportPage() {
   return (
@@ -10,6 +10,6 @@ function ExportPage() {
   );
 }
 
-export const Route = createFileRoute('/export/')({
+export const Route = createFileRoute("/export/")({
   component: ExportPage,
-})
+});

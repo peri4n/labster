@@ -1,5 +1,5 @@
-import { Box, Typography } from '@mui/material';
-import { createFileRoute } from '@tanstack/react-router';
+import { Box, Typography } from "@mui/material";
+import { createFileRoute } from "@tanstack/react-router";
 
 function StatisticsPage() {
   return (
@@ -10,6 +10,6 @@ function StatisticsPage() {
   );
 }
 
-export const Route = createFileRoute('/statistics/')({
+export const Route = createFileRoute("/statistics/")({
   component: StatisticsPage,
-})
+});

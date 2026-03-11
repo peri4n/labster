@@ -1,4 +1,4 @@
-export type Alphabet = 'dna' | 'rna' | 'protein';
+export type Alphabet = "dna" | "rna" | "protein";
 
 export type Sequence = {
   id: number;
@@ -7,5 +7,4 @@ export type Sequence = {
   description: string;
   sequence: string;
   created_at: Date;
-}
-
+};

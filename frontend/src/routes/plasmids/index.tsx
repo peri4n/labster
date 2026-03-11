@@ -1,5 +1,5 @@
-import { Box, Typography } from '@mui/material';
-import { createFileRoute } from '@tanstack/react-router';
+import { Box, Typography } from "@mui/material";
+import { createFileRoute } from "@tanstack/react-router";
 
 function PlasmidsPage() {
   return (
@@ -10,6 +10,6 @@ function PlasmidsPage() {
   );
 }
 
-export const Route = createFileRoute('/plasmids/')({
+export const Route = createFileRoute("/plasmids/")({
   component: PlasmidsPage,
-})
+});

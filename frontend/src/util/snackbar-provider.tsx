@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState } from "react";
-import { Snackbar, Alert } from "@mui/material";
+import { Alert, Snackbar } from "@mui/material";
+import type React from "react";
+import { createContext, useContext, useState } from "react";
 
 type SnackbarContextType = {
   showSnackbar: (message: string, severity?: "success" | "error" | "warning" | "info") => void;
@@ -26,7 +27,12 @@ export const SnackbarProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   return (
     <SnackbarContext.Provider value={{ showSnackbar, hideSnackbar }}>
       {children}
-      <Snackbar open={open} autoHideDuration={3000} onClose={hideSnackbar} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+      <Snackbar
+        open={open}
+        autoHideDuration={3000}
+        onClose={hideSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
         <Alert onClose={hideSnackbar} severity={severity} sx={{ width: "100%" }}>
           {message}
         </Alert>
@@ -42,4 +48,3 @@ export const useSnackbar = (): SnackbarContextType => {
   }
   return context;
 };
-

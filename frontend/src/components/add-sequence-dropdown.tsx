@@ -1,14 +1,13 @@
-import { Add, Upload, MoreVert } from "@mui/icons-material";
-import { Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Add, MoreVert, Upload } from "@mui/icons-material";
+import { Button, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import { useState } from "react";
 import AddSequenceDialog from "./add-sequence-dialog";
 import FileUploadDialog from "./file-upload-dialog";
 
-
 export default function AddSequenceDropdown() {
-  let [showAddSequenceDialog, setShowSequenceDialog] = useState(false);
-  let [showFileUploadDialog, setShowFileUploadDialog] = useState(false);
-  let [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [showAddSequenceDialog, setShowSequenceDialog] = useState(false);
+  const [showFileUploadDialog, setShowFileUploadDialog] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const open = Boolean(anchorEl);
 
@@ -36,9 +35,9 @@ export default function AddSequenceDropdown() {
         variant="contained"
         onClick={handleClick}
         endIcon={<MoreVert />}
-        aria-controls={open ? 'actions-menu' : undefined}
+        aria-controls={open ? "actions-menu" : undefined}
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
+        aria-expanded={open ? "true" : undefined}
       >
         Add Sequence
       </Button>
@@ -49,8 +48,8 @@ export default function AddSequenceDropdown() {
         onClose={handleClose}
         slotProps={{
           list: {
-            'aria-labelledby': 'actions-button',
-          }
+            "aria-labelledby": "actions-button",
+          },
         }}
       >
         <MenuItem onClick={handleAddSequence}>
@@ -66,9 +65,14 @@ export default function AddSequenceDropdown() {
           <ListItemText>Upload file</ListItemText>
         </MenuItem>
       </Menu>
-      <AddSequenceDialog open={showAddSequenceDialog} handleClose={() => setShowSequenceDialog(false)} />
-      <FileUploadDialog open={showFileUploadDialog} handleClose={() => setShowFileUploadDialog(false)} />
+      <AddSequenceDialog
+        open={showAddSequenceDialog}
+        handleClose={() => setShowSequenceDialog(false)}
+      />
+      <FileUploadDialog
+        open={showFileUploadDialog}
+        handleClose={() => setShowFileUploadDialog(false)}
+      />
     </>
   );
 }
-

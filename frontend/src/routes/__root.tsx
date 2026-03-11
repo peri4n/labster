@@ -1,35 +1,54 @@
 import "./app.css";
-import { AppBar, Box, CssBaseline, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography, Divider } from "@mui/material";
 import {
-  Home, Biotech, Collections,
-  Summarize, Science, ChangeHistory,
-  CompareArrows, ManageSearch, BarChart,
-  FileUpload, FileDownload,
+  BarChart,
+  Biotech,
+  ChangeHistory,
+  Collections,
+  CompareArrows,
+  FileDownload,
+  FileUpload,
+  Home,
+  ManageSearch,
+  Science,
+  Summarize,
 } from "@mui/icons-material";
+import {
+  AppBar,
+  Box,
+  CssBaseline,
+  Divider,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 
-import { Link, Outlet, createRootRoute } from '@tanstack/react-router'
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 
 export const Route = createRootRoute({
   component: RootComponent,
-})
+});
 
 const drawerWidth = 220;
 
-const createMenuItem = (text: string, icon: React.ReactNode, to: string) =>
+const createMenuItem = (text: string, icon: React.ReactNode, to: string) => (
   <Link to={to}>
     <ListItem key={text} disablePadding>
       <ListItemButton>
-        <ListItemIcon>
-          {icon}
-        </ListItemIcon>
+        <ListItemIcon>{icon}</ListItemIcon>
         <ListItemText primary={text} />
       </ListItemButton>
     </ListItem>
   </Link>
+);
 
 function RootComponent() {
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
@@ -43,16 +62,16 @@ function RootComponent() {
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          [`& .MuiDrawer-paper`]: {
+          "& .MuiDrawer-paper": {
             width: drawerWidth,
-            boxSizing: 'border-box',
-            borderRight: '1px solid',
-            borderColor: 'divider',
+            boxSizing: "border-box",
+            borderRight: "1px solid",
+            borderColor: "divider",
           },
         }}
       >
         <Toolbar />
-        <Box sx={{ overflow: 'auto', pt: 1 }}>
+        <Box sx={{ overflow: "auto", pt: 1 }}>
           <List dense>
             {createMenuItem("Home", <Home color="primary" />, "/")}
 
@@ -82,5 +101,5 @@ function RootComponent() {
         <Outlet />
       </Box>
     </Box>
-  )
+  );
 }

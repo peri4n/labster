@@ -1,5 +1,5 @@
-import { Box, Typography } from '@mui/material';
-import { createFileRoute } from '@tanstack/react-router';
+import { Box, Typography } from "@mui/material";
+import { createFileRoute } from "@tanstack/react-router";
 
 function AlignmentPage() {
   return (
@@ -10,6 +10,6 @@ function AlignmentPage() {
   );
 }
 
-export const Route = createFileRoute('/alignment/')({
+export const Route = createFileRoute("/alignment/")({
   component: AlignmentPage,
-})
+});

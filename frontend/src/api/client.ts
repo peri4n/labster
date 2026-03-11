@@ -1,5 +1,5 @@
-import type { Sequence } from '@models/sequence';
-import type { Collection } from '@models/collection';
+import type { Collection } from "@models/collection";
+import type { Sequence } from "@models/sequence";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -19,18 +19,23 @@ class ApiClient {
     return this.request(`/sequences/${id}`);
   }
 
-  async createSequence(data: { identifier: string; description: string; sequence: string; alphabet: string }): Promise<void> {
-    await this.request('/sequences', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+  async createSequence(data: {
+    identifier: string;
+    description: string;
+    sequence: string;
+    alphabet: string;
+  }): Promise<void> {
+    await this.request("/sequences", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
   }
 
   async deleteSequence(id: number): Promise<void> {
     await this.request(`/sequences/${id}`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
     });
   }
 
@@ -44,14 +49,18 @@ class ApiClient {
     return this.request(`/collections/${id}`);
   }
 
-  async getCollectionSequences(collectionId: number, page: number, perPage: number): Promise<Sequence[]> {
+  async getCollectionSequences(
+    collectionId: number,
+    page: number,
+    perPage: number,
+  ): Promise<Sequence[]> {
     return this.request(`/collections/${collectionId}/sequences?page=${page}&per_page=${perPage}`);
   }
 
   async deleteCollection(id: number): Promise<void> {
     await this.request(`/collections/${id}`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
     });
   }
 }

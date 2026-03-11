@@ -1,5 +1,5 @@
-import { SeqViz } from "seqviz";
 import { Box } from "@mui/material";
+import { SeqViz } from "seqviz";
 
 type DNAVisualizerProps = {
   sequence: string;
@@ -21,7 +21,7 @@ export function DNAVisualizer({ sequence, alphabet = "dna", search }: DNAVisuali
           T: "#f44336",
           G: "#2196f3",
           C: "#ffeb3b",
-          U: "#9c27b0"
+          U: "#9c27b0",
         }}
         style={{ height: "100%", width: "100%", paddingRight: 10 }}
       />
