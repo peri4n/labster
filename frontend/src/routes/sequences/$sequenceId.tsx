@@ -24,10 +24,10 @@ export function SequenceDetailsPage() {
 
   const getAlphabetChip = (type: string) => {
     switch (type.toLowerCase()) {
-      case 'dna': return <Chip label="DNA" color="primary" size="medium" />;
-      case 'rna': return <Chip label="RNA" color="error" size="medium" />;
-      case 'protein': return <Chip label="Protein" color="info" size="medium" />;
-      default: return <Chip label={type.toUpperCase()} color="default" size="medium" />;
+      case 'dna': return <Chip label="DNA" color="primary" size="medium" variant="filled"/>;
+      case 'rna': return <Chip label="RNA" color="error" size="medium" variant="filled"/>;
+      case 'protein': return <Chip label="Protein" color="info" size="medium"variant="filled" />;
+      default: return <Chip label={type.toUpperCase()} color="default" size="medium" variant="filled"/>;
     }
   };
 

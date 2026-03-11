@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Checkbox, TablePagination, Skeleton } from '@mui/material'
+import { Card, CardContent, CardHeader, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Checkbox, TablePagination, Skeleton, Paper } from '@mui/material'
 import { useState } from 'react'
 import type { Sequence } from "@models/sequence";
 import { DeleteOutline } from '@mui/icons-material';
@@ -9,9 +9,9 @@ import ConfirmationDialog from '@components/confirmation-dialog';
 
 function renderAplhabetCell(alphabet: string) {
   switch (alphabet) {
-    case 'dna': return (<Chip label="DNA" color="primary" />)
-    case 'rna': return (<Chip label="RNA" color="error" />)
-    case 'protein': return (<Chip label="Protein" color="info" />)
+    case 'dna': return (<Chip label="DNA" color="primary" variant="outlined" size="small"/>)
+    case 'rna': return (<Chip label="RNA" color="error" variant="outlined" size="small"/>)
+    case 'protein': return (<Chip label="Protein" color="info" variant="outlined" size="small"/>)
   }
 }
 
@@ -119,10 +119,15 @@ function SequenceListPage() {
   return (
     <>
       <Card variant="outlined">
-        <CardHeader title="Sequences" action={<AddSequenceDropdown />} sx={{ pr: 3 }} />
+        <CardHeader
+          title="Sequences"
+          action={<AddSequenceDropdown />}
+          sx={{ pr: 3 }}
+          slotProps={{ title: { variant: 'h5', color: 'primary.main' } }}
+        />
         <CardContent>
-          <TableContainer>
-            <Table sx={{ border: 0 }}>
+          <TableContainer component={Paper}>
+            <Table sx={{ border: 0 }} size="small">
               <TableHead>
                 <TableRow>
                   <TableCell padding="checkbox">
@@ -133,7 +138,7 @@ function SequenceListPage() {
                       onChange={handleSelectAllClick}
                     />
                   </TableCell>
-                  <TableCell>Identifier</TableCell>
+                  <TableCell scope="row">Identifier</TableCell>
                   <TableCell>Alphabet</TableCell>
                   <TableCell>Description</TableCell>
                   <TableCell>Sequence</TableCell>

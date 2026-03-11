@@ -29,7 +29,28 @@ function getRouter(queryClient: QueryClient) {
   });
 }
 
-const theme = createTheme();
+const theme = createTheme({
+  components: {
+    MuiTextField: { defaultProps: { variant: 'outlined' } },
+    MuiButton: { defaultProps: { variant: 'outlined' } },
+    MuiCard: { defaultProps: { variant: 'outlined' } },
+    MuiPaper: { defaultProps: { variant: 'outlined' } },
+    MuiChip: { defaultProps: { variant: 'outlined' } },
+    MuiAlert: { defaultProps: { variant: 'outlined' } },
+    MuiFormControl: { defaultProps: { variant: 'outlined' } },
+    MuiSelect: { defaultProps: { variant: 'outlined' } },
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'rgba(0, 0, 0, 0.04)',
+          '& .MuiTableCell-root': {
+            fontWeight: 700,
+          },
+        },
+      },
+    },
+  },
+});
 
 export function App() {
   const queryClient = new QueryClient();
