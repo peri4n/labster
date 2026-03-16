@@ -35,7 +35,7 @@ metrics = "0.24.2"
 utoipa = { version = "5.4.0", features = ["axum_extras", "macros"] }
 
 [dev-dependencies]
-fake = "4.4"
+fake = "5.0"
 googletest = "0.14"
 labster-db = { path = "../db", features = ["test-helpers"] }
 labster-web = { path = ".", features = ["test-helpers"] }
