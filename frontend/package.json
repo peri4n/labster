@@ -30,7 +30,7 @@
     "@biomejs/biome": "2.4.7",
     "@react-router/dev": "^7.13.1",
     "@tailwindcss/vite": "^4.2.1",
-    "@tanstack/react-query-devtools": "^5.91.3",
+    "@tanstack/react-query-devtools": "^5.95.0",
     "@tanstack/react-router-devtools": "^1.166.9",
     "@tanstack/router-plugin": "^1.166.12",
     "@types/node": "^25",
