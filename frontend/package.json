@@ -32,7 +32,7 @@
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-query-devtools": "^5.95.0",
     "@tanstack/react-router-devtools": "^1.166.9",
-    "@tanstack/router-plugin": "^1.166.12",
+    "@tanstack/router-plugin": "^1.167.3",
     "@types/node": "^25",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.2",
