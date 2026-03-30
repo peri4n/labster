@@ -27,7 +27,7 @@
     "seqviz": "^3.10.18"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.8",
+    "@biomejs/biome": "2.4.9",
     "@react-router/dev": "^7.13.2",
     "@tailwindcss/vite": "^4.2.2",
     "@tanstack/react-query-devtools": "^5.95.0",
