@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.12",
-    "@react-router/dev": "^7.14.0",
+    "@react-router/dev": "^7.14.2",
     "@tailwindcss/vite": "^4.2.2",
     "@tanstack/react-query-devtools": "^5.99.2",
     "@tanstack/react-router-devtools": "^1.166.13",
