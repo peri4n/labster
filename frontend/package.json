@@ -23,7 +23,7 @@
     "react": "^19.2.5",
     "react-dom": "^19.2.0",
     "react-dropzone": "^15.0.0",
-    "react-hook-form": "^7.72.1",
+    "react-hook-form": "^7.74.0",
     "seqviz": "^3.10.20"
   },
   "devDependencies": {
